@@ -1,0 +1,130 @@
+@page "/checkout"
+@using Shopimoto.Application.Interfaces
+@using Shopimoto.Domain.Entities
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "Buyer")]
+@inject ICartService CartService
+@inject IOrderService OrderService
+@inject AuthenticationStateProvider AuthStateProvider
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
+
+<div class="row mb-5 fade-in">
+    <div class="col-12 text-center">
+        <h2 class="display-5 fw-bold text-primary mb-3">Checkout</h2>
+        <p class="text-muted lead">Confirm your order and pay.</p>
+    </div>
+</div>
+
+@if (IsLoading)
+{
+    <div class="text-center py-5">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+}
+else if (UserCart == null || !UserCart.Items.Any())
+{
+    <div class="alert alert-warning text-center">
+        Your cart is empty. <a href="/" class="alert-link">Go shopping</a>
+    </div>
+}
+else
+{
+    <div class="row justify-content-center animate-fade-in">
+        <div class="col-lg-6">
+            <div class="card shadow border-0 p-4">
+                <h4 class="fw-bold mb-4">Order Summary</h4>
+                
+                <ul class="list-group list-group-flush mb-4">
+                    @foreach (var item in UserCart.Items)
+                    {
+                        <li class="list-group-item d-flex justify-content-between align-items-center bg-transparent px-0">
+                            <div>
+                                <h6 class="mb-0">@item.Product?.Title</h6>
+                                <small class="text-muted">Qty: @item.Quantity</small>
+                            </div>
+                            <span class="fw-bold">@((item.Product!.Price * item.Quantity).ToString("C"))</span>
+                        </li>
+                    }
+                    <li class="list-group-item d-flex justify-content-between align-items-center bg-transparent px-0 border-top mt-2 pt-3">
+                        <span class="h5 fw-bold mb-0">Total</span>
+                        <span class="h5 fw-bold text-primary mb-0">@UserCart.Items.Sum(i => i.Product!.Price * i.Quantity).ToString("C")</span>
+                    </li>
+                </ul>
+
+                <hr class="mb-4">
+                
+                <h5 class="fw-bold mb-3">Payment Method</h5>
+                <div class="alert alert-info border-0 bg-info bg-opacity-10 d-flex align-items-center">
+                    <i class="bi bi-credit-card-2-front-fill fs-4 me-3 text-info"></i>
+                    <div>
+                        <h6 class="mb-0 fw-bold">Mock Payment Provider</h6>
+                        <small>No real charge will be made.</small>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary w-100 py-3 shadow-sm mt-3" @onclick="PlaceOrder" disabled="@IsProcessing">
+                    @if (IsProcessing)
+                    {
+                        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                        <span>Processing...</span>
+                    }
+                    else
+                    {
+                        <span>Pay & Place Order</span>
+                    }
+                </button>
+                
+                 <a href="/cart" class="btn btn-link w-100 mt-2 text-muted text-decoration-none">
+                    Back to Cart
+                </a>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private Shopimoto.Domain.Entities.Cart? UserCart;
+    private bool IsLoading = true;
+    private bool IsProcessing = false;
+    private Guid BuyerId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity != null && user.Identity.IsAuthenticated)
+        {
+            var userIdClaim = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+            if (userIdClaim != null && Guid.TryParse(userIdClaim.Value, out Guid userId))
+            {
+                BuyerId = userId;
+                UserCart = await CartService.GetOrCreateCartAsync(BuyerId);
+            }
+        }
+        
+        IsLoading = false;
+    }
+
+    private async Task PlaceOrder()
+    {
+        IsProcessing = true;
+        try
+        {
+            // Simulate payment delay
+            await Task.Delay(1500); 
+            
+            var orderId = await OrderService.CheckoutAsync(BuyerId);
+            NavigationManager.NavigateTo($"/order-success/{orderId}");
+        }
+        catch (Exception ex)
+        {
+            // Handle error (show message)
+            Console.WriteLine($"Order Error: {ex.Message}");
+            IsProcessing = false;
+        }
+    }
+}

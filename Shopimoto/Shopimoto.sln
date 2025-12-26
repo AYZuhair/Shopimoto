@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shopimoto.Web", "Shopimoto.Web", "{DB1103E2-6A4F-4273-9489-E3A6E08DFCA5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shopimoto.Web", "Shopimoto.Web\Shopimoto.Web\Shopimoto.Web.csproj", "{C6FAF89A-EBEF-4983-8FE1-674EC54422CE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shopimoto.Web.Client", "Shopimoto.Web\Shopimoto.Web.Client\Shopimoto.Web.Client.csproj", "{76CBF956-8DD6-4935-AA49-007032D91909}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C6FAF89A-EBEF-4983-8FE1-674EC54422CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C6FAF89A-EBEF-4983-8FE1-674EC54422CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C6FAF89A-EBEF-4983-8FE1-674EC54422CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C6FAF89A-EBEF-4983-8FE1-674EC54422CE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{76CBF956-8DD6-4935-AA49-007032D91909}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{76CBF956-8DD6-4935-AA49-007032D91909}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{76CBF956-8DD6-4935-AA49-007032D91909}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{76CBF956-8DD6-4935-AA49-007032D91909}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{C6FAF89A-EBEF-4983-8FE1-674EC54422CE} = {DB1103E2-6A4F-4273-9489-E3A6E08DFCA5}
+		{76CBF956-8DD6-4935-AA49-007032D91909} = {DB1103E2-6A4F-4273-9489-E3A6E08DFCA5}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,74 @@
+@inherits LayoutComponentBase
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthStateProvider
+@using Shopimoto.Web.Components.Layout
+
+<div class="d-flex h-100">
+    <!-- Sidebar -->
+    <div class="d-flex flex-column flex-shrink-0 p-3 text-white bg-dark" style="width: 280px; min-height: 100vh; background: linear-gradient(180deg, var(--primary-color) 0%, #1a3c34 100%) !important;">
+        <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+             <i class="bi bi-shop fs-3 me-3"></i>
+            <span class="fs-4 fw-bold">Seller Hub</span>
+        </a>
+        <hr>
+        <ul class="nav nav-pills flex-column mb-auto">
+            <li class="nav-item">
+                <a href="/seller/dashboard" class="nav-link text-white @(IsActive("/seller/dashboard") ? "active bg-white bg-opacity-10" : "")" aria-current="page">
+                    <i class="bi bi-speedometer2 me-2"></i>
+                    Dashboard
+                </a>
+            </li>
+            <li>
+                <a href="/seller/products/add" class="nav-link text-white @(IsActive("/seller/products/add") ? "active bg-white bg-opacity-10" : "")">
+                    <i class="bi bi-plus-square me-2"></i>
+                    Add Product
+                </a>
+            </li>
+            <li>
+                <a href="/orders" class="nav-link text-white @(IsActive("/seller/orders") ? "active bg-white bg-opacity-10" : "")">
+                    <i class="bi bi-grid me-2"></i>
+                    Orders
+                </a>
+            </li>
+             <li>
+                <a href="/" class="nav-link text-white @(IsActive("/") ? "active bg-white bg-opacity-10" : "")">
+                    <i class="bi bi-arrow-left-circle me-2"></i>
+                    Back to Store
+                </a>
+            </li>
+        </ul>
+        <hr>
+        <div class="dropdown">
+            <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+                <div class="rounded-circle me-2 bg-white text-primary d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                    <i class="bi bi-person-fill"></i>
+                </div>
+                <strong>Seller</strong>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUser1">
+                <li><a class="dropdown-item" href="/settings">Settings</a></li>
+                <li><a class="dropdown-item" href="/profile">Profile</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="/logout">Sign out</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="flex-grow-1 overflow-auto bg-light">
+        <div class="container-fluid py-4 px-5 animate-fade-in">
+            @Body
+        </div>
+    </main>
+</div>
+
+@code {
+    private bool IsActive(string href)
+    {
+        var relativePath = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+        var cleanHref = href.TrimStart('/');
+        if (string.IsNullOrEmpty(relativePath) && string.IsNullOrEmpty(cleanHref)) return true;
+        if (string.Equals(relativePath, cleanHref, StringComparison.OrdinalIgnoreCase)) return true;
+        return false;
+    }
+}

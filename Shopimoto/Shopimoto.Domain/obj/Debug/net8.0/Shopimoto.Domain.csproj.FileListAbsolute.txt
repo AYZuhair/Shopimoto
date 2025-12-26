@@ -1,0 +1,11 @@
+/Users/ahmadzuhair/Documents/Coding/Shopemoto/Shopimoto/Shopimoto.Domain/bin/Debug/net8.0/Shopimoto.Domain.deps.json
+/Users/ahmadzuhair/Documents/Coding/Shopemoto/Shopimoto/Shopimoto.Domain/bin/Debug/net8.0/Shopimoto.Domain.dll
+/Users/ahmadzuhair/Documents/Coding/Shopemoto/Shopimoto/Shopimoto.Domain/bin/Debug/net8.0/Shopimoto.Domain.pdb
+/Users/ahmadzuhair/Documents/Coding/Shopemoto/Shopimoto/Shopimoto.Domain/obj/Debug/net8.0/Shopimoto.Domain.GeneratedMSBuildEditorConfig.editorconfig
+/Users/ahmadzuhair/Documents/Coding/Shopemoto/Shopimoto/Shopimoto.Domain/obj/Debug/net8.0/Shopimoto.Domain.AssemblyInfoInputs.cache
+/Users/ahmadzuhair/Documents/Coding/Shopemoto/Shopimoto/Shopimoto.Domain/obj/Debug/net8.0/Shopimoto.Domain.AssemblyInfo.cs
+/Users/ahmadzuhair/Documents/Coding/Shopemoto/Shopimoto/Shopimoto.Domain/obj/Debug/net8.0/Shopimoto.Domain.csproj.CoreCompileInputs.cache
+/Users/ahmadzuhair/Documents/Coding/Shopemoto/Shopimoto/Shopimoto.Domain/obj/Debug/net8.0/Shopimoto.Domain.dll
+/Users/ahmadzuhair/Documents/Coding/Shopemoto/Shopimoto/Shopimoto.Domain/obj/Debug/net8.0/refint/Shopimoto.Domain.dll
+/Users/ahmadzuhair/Documents/Coding/Shopemoto/Shopimoto/Shopimoto.Domain/obj/Debug/net8.0/Shopimoto.Domain.pdb
+/Users/ahmadzuhair/Documents/Coding/Shopemoto/Shopimoto/Shopimoto.Domain/obj/Debug/net8.0/ref/Shopimoto.Domain.dll

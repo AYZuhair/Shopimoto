@@ -1,0 +1,190 @@
+@page "/seller/products/add"
+@using Microsoft.AspNetCore.Authorization
+@using System.Security.Claims
+@using System.ComponentModel.DataAnnotations
+@using Shopimoto.Application.Interfaces
+@using Shopimoto.Domain.Entities
+@attribute [Authorize(Roles = "Seller")]
+@rendermode InteractiveServer
+@inject IProductService ProductService
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+
+@inject IWebHostEnvironment WebHostEnvironment
+
+<div class="row justify-content-center fade-in">
+    <div class="col-lg-8">
+        <div class="d-flex align-items-center mb-4">
+            <a href="/seller/dashboard" class="btn btn-link text-decoration-none text-muted p-0 me-3">
+                <i class="bi bi-arrow-left fs-4"></i>
+            </a>
+            <h2 class="display-6 fw-bold text-primary mb-0">Add New Product</h2>
+        </div>
+
+        <div class="card shadow border-0 overflow-hidden">
+            <div class="card-body p-5">
+                <EditForm Model="Model" OnValidSubmit="CreateProduct" FormName="CreateProductForm">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary class="text-danger mb-4 alert alert-danger border-0 bg-danger bg-opacity-10" />
+
+                    <div class="mb-4">
+                        <label class="form-label text-uppercase small fw-bold text-muted ls-1">Product Title</label>
+                        <InputText @bind-Value="Model.Title" class="form-control form-control-lg" placeholder="e.g. Vintage Leather Jacket" />
+                        <ValidationMessage For="@(() => Model.Title)" class="text-danger small" />
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label text-uppercase small fw-bold text-muted ls-1">Description</label>
+                        <InputTextArea @bind-Value="Model.Description" class="form-control" rows="4" placeholder="Describe your product..." />
+                        <ValidationMessage For="@(() => Model.Description)" class="text-danger small" />
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <label class="form-label text-uppercase small fw-bold text-muted ls-1">Price ($)</label>
+                            <InputNumber @bind-Value="Model.Price" class="form-control form-control-lg" />
+                            <ValidationMessage For="@(() => Model.Price)" class="text-danger small" />
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <label class="form-label text-uppercase small fw-bold text-muted ls-1">Stock Quantity</label>
+                            <InputNumber @bind-Value="Model.Stock" class="form-control form-control-lg" />
+                            <ValidationMessage For="@(() => Model.Stock)" class="text-danger small" />
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label text-uppercase small fw-bold text-muted ls-1">Category</label>
+                         <InputText @bind-Value="Model.Category" class="form-control" placeholder="e.g. Clothing, Electronics" />
+                         <ValidationMessage For="@(() => Model.Category)" class="text-danger small" />
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label text-uppercase small fw-bold text-muted ls-1">Product Image</label>
+                        <div class="bg-light rounded-3 p-4 border border-dashed text-center">
+                            @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                            {
+                                <div class="mb-3 position-relative d-inline-block">
+                                    <img src="@Model.ImageUrl" class="rounded-3 shadow-sm" style="max-height: 200px;" />
+                                    <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-2 rounded-circle shadow-sm p-2 lh-1" @onclick="() => Model.ImageUrl = string.Empty">
+                                        <i class="bi bi-x-lg"></i>
+                                    </button>
+                                </div>
+                            }
+                            
+                            <div class="@(string.IsNullOrEmpty(Model.ImageUrl) ? "" : "d-none")">
+                                <i class="bi bi-cloud-arrow-up text-primary opacity-50 display-4 mb-3 d-block"></i>
+                                <ValidationMessage For="@(() => Model.ImageUrl)" class="text-danger small" />
+                                <InputFile OnChange="@LoadFiles" class="form-control" accept=".jpg,.jpeg,.png" />
+                                <small class="text-muted d-block mt-2">Upload JPEG/PNG (Max 5MB). Images are auto-resized.</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2 mt-5">
+                        <button type="submit" class="btn btn-primary py-3 fw-bold shadow-sm">
+                            Create Product
+                        </button>
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .ls-1 { letter-spacing: 0.05em; }
+    .border-dashed { border-style: dashed !important; }
+</style>
+
+@code {
+    [SupplyParameterFromForm]
+    public ProductViewModel Model { get; set; } = new();
+
+    private Guid currentUserId;
+    private long maxFileSize = 1024 * 1024 * 10; // 10MB limit (resized is much smaller)
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity?.IsAuthenticated == true)
+        {
+            var userIdClaim = user.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim != null && Guid.TryParse(userIdClaim.Value, out Guid userId))
+            {
+                currentUserId = userId;
+            }
+        }
+    }
+
+    private async Task LoadFiles(InputFileChangeEventArgs e)
+    {
+        var uploadedFile = e.File;
+        if (uploadedFile != null)
+        {
+            try 
+            {
+                 // Resize to 500x500 JPEG
+                var resizedFile = await uploadedFile.RequestImageFileAsync("image/jpeg", 500, 500);
+                
+                var trustedFileName = $"{Guid.NewGuid()}.jpg";
+                var folderPath = Path.Combine(WebHostEnvironment.WebRootPath, "images", "products");
+                
+                if (!Directory.Exists(folderPath))
+                {
+                    Directory.CreateDirectory(folderPath);
+                }
+                
+                var path = Path.Combine(folderPath, trustedFileName);
+
+                await using FileStream fs = new(path, FileMode.Create);
+                await resizedFile.OpenReadStream(maxFileSize).CopyToAsync(fs);
+
+                Model.ImageUrl = $"/images/products/{trustedFileName}";
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine($"Error uploading file: {ex.Message}");
+            }
+        }
+    }
+
+    public async Task CreateProduct()
+    {
+        var product = new Product
+        {
+            Title = Model.Title,
+            Description = Model.Description,
+            Price = Model.Price,
+            Stock = Model.Stock,
+            Category = Model.Category,
+            ImageUrl = Model.ImageUrl,
+            SellerId = currentUserId,
+            CreatedAt = DateTime.UtcNow
+        };
+
+        await ProductService.CreateProductAsync(product);
+        NavigationManager.NavigateTo("/seller/dashboard");
+    }
+
+    public class ProductViewModel
+    {
+        [Required(ErrorMessage = "Please enter a product title")]
+        public string Title { get; set; } = "";
+        
+        [Required]
+        public string Description { get; set; } = "";
+        
+        [Range(0.01, 1000000, ErrorMessage = "Price must be greater than 0")]
+        public decimal Price { get; set; }
+        
+        [Range(0, 100000, ErrorMessage = "Stock cannot be negative")]
+        public int Stock { get; set; }
+        
+        [Required(ErrorMessage = "Category is required")]
+        public string Category { get; set; } = "";
+        
+        public string ImageUrl { get; set; } = "";
+    }
+}

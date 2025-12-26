@@ -1,0 +1,103 @@
+is_global = true
+build_property.TargetFramework = net8.0
+build_property.TargetPlatformMinVersion = 
+build_property.UsingMicrosoftNETSdkWeb = true
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = 
+build_property.PlatformNeutralAssembly = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property.RootNamespace = Shopimoto.Web
+build_property.RootNamespace = Shopimoto.Web
+build_property.ProjectDir = /Users/ahmadzuhair/Documents/Coding/Shopemoto/Shopimoto/Shopimoto.Web/Shopimoto.Web/
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = 
+build_property.RazorLangVersion = 8.0
+build_property.SupportLocalizedComponentNames = 
+build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+build_property.MSBuildProjectDirectory = /Users/ahmadzuhair/Documents/Coding/Shopemoto/Shopimoto/Shopimoto.Web/Shopimoto.Web
+build_property._RazorSourceGeneratorDebug = 
+
+[/Users/ahmadzuhair/Documents/Coding/Shopemoto/Shopimoto/Shopimoto.Web/Shopimoto.Web/Components/App.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9BcHAucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/ahmadzuhair/Documents/Coding/Shopemoto/Shopimoto/Shopimoto.Web/Shopimoto.Web/Components/Layout/SellerLayout.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9MYXlvdXQvU2VsbGVyTGF5b3V0LnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/ahmadzuhair/Documents/Coding/Shopemoto/Shopimoto/Shopimoto.Web/Shopimoto.Web/Components/Pages/Auth/Login.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9BdXRoL0xvZ2luLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/ahmadzuhair/Documents/Coding/Shopemoto/Shopimoto/Shopimoto.Web/Shopimoto.Web/Components/Pages/Auth/Logout.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9BdXRoL0xvZ291dC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/ahmadzuhair/Documents/Coding/Shopemoto/Shopimoto/Shopimoto.Web/Shopimoto.Web/Components/Pages/Auth/Register.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9BdXRoL1JlZ2lzdGVyLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/ahmadzuhair/Documents/Coding/Shopemoto/Shopimoto/Shopimoto.Web/Shopimoto.Web/Components/Pages/Cart.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9DYXJ0LnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/ahmadzuhair/Documents/Coding/Shopemoto/Shopimoto/Shopimoto.Web/Shopimoto.Web/Components/Pages/Checkout.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9DaGVja291dC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/ahmadzuhair/Documents/Coding/Shopemoto/Shopimoto/Shopimoto.Web/Shopimoto.Web/Components/Pages/Error.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9FcnJvci5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/ahmadzuhair/Documents/Coding/Shopemoto/Shopimoto/Shopimoto.Web/Shopimoto.Web/Components/Pages/Home.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9Ib21lLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/ahmadzuhair/Documents/Coding/Shopemoto/Shopimoto/Shopimoto.Web/Shopimoto.Web/Components/Pages/Orders.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9PcmRlcnMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/ahmadzuhair/Documents/Coding/Shopemoto/Shopimoto/Shopimoto.Web/Shopimoto.Web/Components/Pages/OrderSuccess.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9PcmRlclN1Y2Nlc3MucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/ahmadzuhair/Documents/Coding/Shopemoto/Shopimoto/Shopimoto.Web/Shopimoto.Web/Components/Pages/Profile/ProfileSettings.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9Qcm9maWxlL1Byb2ZpbGVTZXR0aW5ncy5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/ahmadzuhair/Documents/Coding/Shopemoto/Shopimoto/Shopimoto.Web/Shopimoto.Web/Components/Pages/Seller/AddProduct.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9TZWxsZXIvQWRkUHJvZHVjdC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/ahmadzuhair/Documents/Coding/Shopemoto/Shopimoto/Shopimoto.Web/Shopimoto.Web/Components/Pages/Seller/Dashboard.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9TZWxsZXIvRGFzaGJvYXJkLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/ahmadzuhair/Documents/Coding/Shopemoto/Shopimoto/Shopimoto.Web/Shopimoto.Web/Components/Pages/Seller/Orders.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9TZWxsZXIvT3JkZXJzLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/ahmadzuhair/Documents/Coding/Shopemoto/Shopimoto/Shopimoto.Web/Shopimoto.Web/Components/Pages/Seller/_Imports.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9TZWxsZXIvX0ltcG9ydHMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/ahmadzuhair/Documents/Coding/Shopemoto/Shopimoto/Shopimoto.Web/Shopimoto.Web/Components/Pages/Weather.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9XZWF0aGVyLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/ahmadzuhair/Documents/Coding/Shopemoto/Shopimoto/Shopimoto.Web/Shopimoto.Web/Components/Routes.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9Sb3V0ZXMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/ahmadzuhair/Documents/Coding/Shopemoto/Shopimoto/Shopimoto.Web/Shopimoto.Web/Components/_Imports.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9fSW1wb3J0cy5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/ahmadzuhair/Documents/Coding/Shopemoto/Shopimoto/Shopimoto.Web/Shopimoto.Web/Components/Layout/MainLayout.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9MYXlvdXQvTWFpbkxheW91dC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = b-8gv24c3j61
+
+[/Users/ahmadzuhair/Documents/Coding/Shopemoto/Shopimoto/Shopimoto.Web/Shopimoto.Web/Components/Layout/NavMenu.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9MYXlvdXQvTmF2TWVudS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = b-ix7gqdap7c

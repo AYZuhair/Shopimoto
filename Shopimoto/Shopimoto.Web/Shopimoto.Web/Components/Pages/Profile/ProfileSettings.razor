@@ -1,0 +1,258 @@
+@page "/settings"
+@using Shopimoto.Domain.Entities
+@rendermode InteractiveServer
+@using Shopimoto.Domain.Interfaces
+@using Shopimoto.Application.Interfaces
+@using Microsoft.AspNetCore.Authorization
+@using System.ComponentModel.DataAnnotations
+@attribute [Authorize]
+@inject AuthenticationStateProvider AuthStateProvider
+@inject IUserRepository UserRepository
+@inject IAuthService AuthService
+@inject NavigationManager NavigationManager
+
+<div class="container py-5" style="margin-top: -5vh;">
+    <div class="row justify-content-center">
+        <div class="col-lg-7">
+            <div class="card shadow-lg animate-fade-in border-0 overflow-hidden">
+                
+                <!-- Header with Gradient & Profile Pic -->
+                <div class="position-relative text-center p-5 pb-5" style="background: linear-gradient(135deg, var(--primary-color), var(--primary-hover)); color: white;">
+                    <div class="mb-2">
+                         <i class="bi bi-person-fill-gear fs-1 opacity-50"></i>
+                    </div>
+                    <h2 class="fw-bold mb-1">Profile Settings</h2>
+                    <p class="opacity-75 mb-4">Manage your personal information</p>
+
+                    <!-- Profile Pic container overlapping the bottom -->
+                    <div class="position-absolute start-50 translate-middle-x" style="bottom: -50px;">
+                        <div class="position-relative">
+                             <img src="@(string.IsNullOrEmpty(UserProfile?.ProfilePictureUrl) ? $"https://ui-avatars.com/api/?name={UserProfile?.FirstName}+{UserProfile?.LastName}&background=random" : UserProfile.ProfilePictureUrl)" 
+                                  alt="Profile" 
+                                  class="rounded-circle border border-4 border-white shadow-sm bg-white"
+                                  style="width: 100px; height: 100px; object-fit: cover;">
+                             <span class="position-absolute bottom-0 end-0 bg-secondary text-white rounded-circle p-1 border border-2 border-white d-flex align-items-center justify-content-center shadow-sm" style="width: 30px; height: 30px;">
+                                 <i class="bi bi-camera-fill small"></i>
+                             </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-body p-5 pt-5 mt-4">
+                    @if (IsLoading)
+                    {
+                        <div class="text-center py-5">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="text-muted mt-3">Loading profile...</p>
+                        </div>
+                    }
+                    else if (UserProfile != null)
+                    {
+                        <div class="text-center mb-5">
+                            <h4 class="fw-bold mb-1">@UserProfile.FirstName @UserProfile.LastName</h4>
+                             <div class="d-inline-flex align-items-center gap-2 bg-light px-3 py-1 rounded-pill mt-2 border">
+                                <span class="text-muted small text-uppercase fw-bold ls-1">Member ID</span>
+                                <span class="fw-bold text-primary font-monospace">@UserProfile.MemberId</span>
+                            </div>
+                        </div>
+
+                        <EditForm Model="@UserProfile" OnValidSubmit="HandleValidSubmit" FormName="ProfileSettingsForm">
+                            <DataAnnotationsValidator />
+                            <ValidationSummary class="text-danger mb-3 small" />
+
+                            <div class="row g-4">
+                                <!-- Personal Info Section -->
+                                <div class="col-12">
+                                     <h6 class="text-uppercase text-muted fw-bold small mb-3 ls-1 border-bottom pb-2">Personal Information</h6>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <div class="mb-1">
+                                        <label for="firstName" class="form-label">First Name</label>
+                                        <InputText id="firstName" class="form-control" @bind-Value="UserProfile.FirstName" />
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-1">
+                                        <label for="lastName" class="form-label">Last Name</label>
+                                        <InputText id="lastName" class="form-control" @bind-Value="UserProfile.LastName" />
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-8">
+                                    <div class="mb-1">
+                                        <label for="username" class="form-label">Username</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light border-end-0 text-muted">@@</span>
+                                            <InputText id="username" class="form-control border-start-0 ps-0" @bind-Value="UserProfile.Username" placeholder="username" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-1">
+                                        <label for="age" class="form-label">Age</label>
+                                        <InputNumber id="age" class="form-control" @bind-Value="UserProfile.Age" />
+                                    </div>
+                                </div>
+
+                                <!-- Avatar Section -->
+                                <div class="col-12 mt-4">
+                                     <h6 class="text-uppercase text-muted fw-bold small mb-3 ls-1 border-bottom pb-2">Avatar</h6>
+                                </div>
+                                
+                                <div class="col-12">
+                                    <div class="mb-3">
+                                        <label for="profilePic" class="form-label">Profile Picture URL</label>
+                                        <!-- Keep URL input for fallback/manual but add File Upload as primary -->
+                                        <div class="d-flex gap-2 align-items-center">
+                                            <InputFile OnChange="@LoadFiles" class="form-control" accept=".jpg,.jpeg,.png" />
+                                        </div>
+                                        <div class="form-text mt-2"><i class="bi bi-info-circle me-1"></i> Upload a JPG or PNG (max 5MB).</div>
+                                    </div>
+                                    @if (!string.IsNullOrEmpty(ErrorMessage))
+                                    {
+                                        <div class="alert alert-danger border-0 bg-danger bg-opacity-10 text-danger mt-3">
+                                            <i class="bi bi-exclamation-circle-fill me-2"></i> @ErrorMessage
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+
+                            <div class="d-grid gap-2 mt-5">
+                                <button type="submit" class="btn btn-primary shadow-sm py-3">
+                                    Save Changes
+                                </button>
+                                <a href="/" class="btn btn-link text-muted text-decoration-none">Return Home</a>
+                            </div>
+
+                            @if (!string.IsNullOrEmpty(StatusMessage))
+                            {
+                                <div class="alert alert-success mt-4 text-center border-0 bg-success bg-opacity-10 text-success fw-medium animate-fade-in" role="alert">
+                                    <i class="bi bi-check-circle-fill me-2"></i> @StatusMessage
+                                </div>
+                            }
+                        </EditForm>
+                    }
+                    else
+                    {
+                        <div class="alert alert-danger border-0 bg-danger bg-opacity-10 text-danger rounded-3 text-center p-4">
+                            <i class="bi bi-exclamation-octagon fs-1 d-block mb-3"></i>
+                            <h5 class="fw-bold">Profile Not Found</h5>
+                            <p class="mb-0">We couldn't retrieve your user details.</p>
+                        </div>
+                    }
+                </div>
+            </div>
+            
+            <div class="text-center mt-4">
+                 <p class="text-muted small opacity-75">Member since @UserProfile?.CreatedAt.Year</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .ls-1 { letter-spacing: 0.05em; }
+</style>
+
+@using System.IO
+@inject IWebHostEnvironment WebHostEnvironment
+
+@code {
+    private User? UserProfile;
+    private bool IsLoading = true;
+    private string StatusMessage = string.Empty;
+    private string ErrorMessage = string.Empty;
+    private IBrowserFile? uploadedFile;
+    // Limit for the resized stream. 5MB is plenty for 500x500. 
+    // Note: If the *original* file is > SignalR limit (usually 32KB-ish chunks but total msg size matters), Blazor handles it via stream.
+    // However, RequestImageFileAsync happens in browser. The stream we read is the resized one.
+    private long maxFileSize = 1024 * 1024 * 10; // 10MB safety limit
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity != null && user.Identity.IsAuthenticated)
+        {
+            var email = user.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value 
+                        ?? user.FindFirst(System.Security.Claims.ClaimTypes.Name)?.Value;
+                        
+            if (!string.IsNullOrEmpty(email))
+            {
+                UserProfile = await UserRepository.GetByEmailAsync(email);
+                
+                 if (string.IsNullOrEmpty(UserProfile?.MemberId))
+                 {
+                     if (UserProfile != null)
+                     {
+                         UserProfile.MemberId = $"SHP-{Random.Shared.Next(100000, 999999)}";
+                         await AuthService.UpdateProfileAsync(UserProfile);
+                     }
+                 }
+            }
+        }
+        else
+        {
+            NavigationManager.NavigateTo("/login");
+        }
+        
+        IsLoading = false;
+    }
+
+    private async Task LoadFiles(InputFileChangeEventArgs e)
+    {
+        uploadedFile = e.File;
+        // Preview logic could go here if we want immediate feedback
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        if (UserProfile == null) return;
+        ErrorMessage = string.Empty;
+
+        try
+        {
+            // Check username uniqueness if changed (excluding current user check happens naturally if we assume repo check fails for *other* users, but current repo check fails for *any* user. 
+            // We need to handle the "Username taken" error from backend gracefully)
+            
+            // Handle File Upload
+            if (uploadedFile != null)
+            {
+                // Resize image to 500x500 (max dimensions), convert to JPEG
+                var resizedFile = await uploadedFile.RequestImageFileAsync("image/jpeg", 500, 500);
+                
+                var trustedFileNameForFileStorage = $"{Guid.NewGuid()}.jpg";
+                var folderPath = Path.Combine(WebHostEnvironment.WebRootPath, "images", "profiles");
+                
+                if (!Directory.Exists(folderPath))
+                {
+                    Directory.CreateDirectory(folderPath);
+                }
+                
+                var path = Path.Combine(folderPath, trustedFileNameForFileStorage);
+
+                // We can use a smaller max size for the resized image stream since 500x500 JPEG is small
+                await using FileStream fs = new(path, FileMode.Create);
+                await resizedFile.OpenReadStream(maxFileSize).CopyToAsync(fs);
+
+                UserProfile.ProfilePictureUrl = $"/images/profiles/{trustedFileNameForFileStorage}";
+            }
+
+            await AuthService.UpdateProfileAsync(UserProfile);
+            StatusMessage = "Profile updated successfully!";
+            StateHasChanged();
+            
+            await Task.Delay(3000);
+            StatusMessage = string.Empty;
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = ex.Message; // "Username is already taken" will show here
+        }
+    }
+}

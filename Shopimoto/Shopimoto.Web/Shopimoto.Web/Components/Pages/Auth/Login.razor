@@ -1,0 +1,107 @@
+@page "/login"
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Authentication.Cookies
+@using System.Security.Claims
+@using Shopimoto.Application.Interfaces
+@using System.ComponentModel.DataAnnotations
+@inject IAuthService AuthService
+@inject NavigationManager NavigationManager
+
+<div class="row align-items-center justify-content-center min-vh-100 py-5" style="margin-top: -5vh;">
+    <div class="col-md-5 col-lg-4">
+        <div class="card shadow-lg animate-fade-in border-0">
+            <div class="card-body p-5">
+                <div class="text-center mb-4">
+                    <img src="shopimotologo.png" alt="Shopimoto" height="90" class="mb-3" />
+                    <h2 class="fw-bold text-primary mb-2">Welcome Back</h2>
+                    <p class="text-muted">Enter your credentials to access your account</p>
+                </div>
+
+                @if (!string.IsNullOrEmpty(ErrorMessage))
+                {
+                    <div class="alert alert-danger bg-danger bg-opacity-10 border-0 text-danger mb-4 rounded-3 text-center">
+                        <small>@ErrorMessage</small>
+                    </div>
+                }
+
+                <EditForm Model="Model" OnValidSubmit="Authenticate" FormName="LoginForm">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary class="text-danger small mb-3" />
+
+                    <div class="mb-4">
+                        <label class="form-label">Email Address</label>
+                        <InputText @bind-Value="Model.Email" class="form-control" placeholder="name@example.com" />
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label">Password</label>
+                        <InputText @bind-Value="Model.Password" type="password" class="form-control" placeholder="••••••••" />
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 py-3 shadow-sm mb-4">
+                        Sign In
+                    </button>
+
+                    <div class="text-center">
+                        <p class="text-muted small mb-0">Don't have an account? <a href="/register" class="fw-semibold">Create account</a></p>
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+        
+        <div class="text-center mt-4">
+            <a href="/" class="text-decoration-none text-muted small">
+                &larr; Back to Shopimoto
+            </a>
+        </div>
+    </div>
+</div>
+
+@code {
+    [SupplyParameterFromForm]
+    public LoginViewModel Model { get; set; } = new();
+
+    public string ErrorMessage { get; set; } = "";
+
+    [CascadingParameter]
+    public HttpContext? HttpContext { get; set; }
+
+    public async Task Authenticate()
+    {
+        var user = await AuthService.LoginAsync(Model.Email, Model.Password);
+
+        if (user is null)
+        {
+            ErrorMessage = "Invalid email or password.";
+            return;
+        }
+
+        var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.Name, user.Email),
+            new Claim(ClaimTypes.Email, user.Email),
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new Claim(ClaimTypes.Role, user.Role.ToString()),
+            new Claim("ProfilePictureUrl", user.ProfilePictureUrl ?? "") // Add Propic Claim
+        };
+
+        var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+        var principal = new ClaimsPrincipal(identity);
+
+        if (HttpContext is not null)
+        {
+            await HttpContext.SignInAsync(principal);
+            NavigationManager.NavigateTo("/");
+        }
+    }
+
+    public class LoginViewModel
+    {
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; } = "";
+
+        [Required]
+        public string Password { get; set; } = "";
+    }
+}

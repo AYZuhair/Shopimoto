@@ -1,0 +1,105 @@
+@page "/seller/orders"
+@using Shopimoto.Application.Interfaces
+@using Shopimoto.Domain.Entities
+@using Microsoft.AspNetCore.Authorization
+@using System.Security.Claims
+@attribute [Authorize(Roles = "Seller")]
+@inject IOrderService OrderService
+@inject AuthenticationStateProvider AuthStateProvider
+@rendermode InteractiveServer
+
+<div class="row mb-5 fade-in">
+    <div class="col-12">
+        <h2 class="display-6 fw-bold text-primary mb-1">Orders</h2>
+        <p class="text-muted">View orders containing your products.</p>
+    </div>
+</div>
+
+@if (IsLoading)
+{
+    <div class="text-center py-5">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+}
+else if (SellerOrderList == null || !SellerOrderList.Any())
+{
+    <div class="text-center py-5 animate-fade-in p-5 bg-white rounded-3 shadow-sm">
+        <i class="bi bi-inbox text-muted opacity-25" style="font-size: 4rem;"></i>
+        <h4 class="mt-4 fw-bold text-muted">No orders found</h4>
+        <p class="text-muted">You haven't received any orders yet.</p>
+    </div>
+}
+else
+{
+    <div class="table-responsive animate-fade-in">
+        <table class="table table-hover align-middle mb-0 bg-white shadow-sm rounded-3 overflow-hidden">
+            <thead class="bg-light">
+                <tr>
+                    <th class="ps-4 py-3 border-0 text-secondary small fw-bold text-uppercase">Date</th>
+                    <th class="py-3 border-0 text-secondary small fw-bold text-uppercase">Order ID</th>
+                     <th class="py-3 border-0 text-secondary small fw-bold text-uppercase">Items (Your Products)</th>
+                    <th class="py-3 border-0 text-secondary small fw-bold text-uppercase">Total (Order)</th>
+                     <th class="pe-4 py-3 border-0 text-end text-secondary small fw-bold text-uppercase">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var order in SellerOrderList)
+                {
+                    <tr>
+                        <td class="ps-4 py-3 fw-bold text-dark">
+                            @order.OrderDate.ToLocalTime().ToString("MMM dd, HH:mm")
+                        </td>
+                         <td class="py-3 text-muted font-monospace small">
+                            #@order.Id.ToString().Substring(0, 8)
+                        </td>
+                         <td class="py-3">
+                             <!-- Filter to show only THIS seller's items in the summary -->
+                             <ul class="list-unstyled mb-0">
+                                @foreach(var item in order.Items.Where(i => i.Product?.SellerId == CurrentSellerId))
+                                {
+                                    <li class="small mb-1">
+                                        <span class="fw-bold">@item.Quantity x</span> @item.Product?.Title
+                                    </li>
+                                }
+                             </ul>
+                        </td>
+                        <td class="py-3 text-dark">
+                             @order.TotalAmount.ToString("C")
+                        </td>
+                        <td class="pe-4 py-3 text-end">
+                            <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3">
+                                @order.Status
+                            </span>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@code {
+    private IEnumerable<Order>? SellerOrderList;
+    private bool IsLoading = true;
+    private Guid CurrentSellerId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity != null && user.Identity.IsAuthenticated)
+        {
+            var userIdClaim = user.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim != null && Guid.TryParse(userIdClaim.Value, out Guid userId))
+            {
+                CurrentSellerId = userId;
+                SellerOrderList = await OrderService.GetSellerOrdersAsync(CurrentSellerId);
+            }
+        }
+        
+        IsLoading = false;
+    }
+}

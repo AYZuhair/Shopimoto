@@ -1,0 +1,15 @@
+/Users/ahmadzuhair/Documents/Coding/Shopemoto/Shopimoto/Shopimoto.Application/bin/Debug/net8.0/Shopimoto.Application.deps.json
+/Users/ahmadzuhair/Documents/Coding/Shopemoto/Shopimoto/Shopimoto.Application/bin/Debug/net8.0/Shopimoto.Application.dll
+/Users/ahmadzuhair/Documents/Coding/Shopemoto/Shopimoto/Shopimoto.Application/bin/Debug/net8.0/Shopimoto.Application.pdb
+/Users/ahmadzuhair/Documents/Coding/Shopemoto/Shopimoto/Shopimoto.Application/bin/Debug/net8.0/Shopimoto.Domain.dll
+/Users/ahmadzuhair/Documents/Coding/Shopemoto/Shopimoto/Shopimoto.Application/bin/Debug/net8.0/Shopimoto.Domain.pdb
+/Users/ahmadzuhair/Documents/Coding/Shopemoto/Shopimoto/Shopimoto.Application/obj/Debug/net8.0/Shopimoto.Application.csproj.AssemblyReference.cache
+/Users/ahmadzuhair/Documents/Coding/Shopemoto/Shopimoto/Shopimoto.Application/obj/Debug/net8.0/Shopimoto.Application.GeneratedMSBuildEditorConfig.editorconfig
+/Users/ahmadzuhair/Documents/Coding/Shopemoto/Shopimoto/Shopimoto.Application/obj/Debug/net8.0/Shopimoto.Application.AssemblyInfoInputs.cache
+/Users/ahmadzuhair/Documents/Coding/Shopemoto/Shopimoto/Shopimoto.Application/obj/Debug/net8.0/Shopimoto.Application.AssemblyInfo.cs
+/Users/ahmadzuhair/Documents/Coding/Shopemoto/Shopimoto/Shopimoto.Application/obj/Debug/net8.0/Shopimoto.Application.csproj.CoreCompileInputs.cache
+/Users/ahmadzuhair/Documents/Coding/Shopemoto/Shopimoto/Shopimoto.Application/obj/Debug/net8.0/Shopimot.30A3965F.Up2Date
+/Users/ahmadzuhair/Documents/Coding/Shopemoto/Shopimoto/Shopimoto.Application/obj/Debug/net8.0/Shopimoto.Application.dll
+/Users/ahmadzuhair/Documents/Coding/Shopemoto/Shopimoto/Shopimoto.Application/obj/Debug/net8.0/refint/Shopimoto.Application.dll
+/Users/ahmadzuhair/Documents/Coding/Shopemoto/Shopimoto/Shopimoto.Application/obj/Debug/net8.0/Shopimoto.Application.pdb
+/Users/ahmadzuhair/Documents/Coding/Shopemoto/Shopimoto/Shopimoto.Application/obj/Debug/net8.0/ref/Shopimoto.Application.dll

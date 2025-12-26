@@ -1,0 +1,190 @@
+@page "/register"
+@using Shopimoto.Application.Interfaces
+@using Shopimoto.Domain.Entities
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Authentication.Cookies
+@using System.Security.Claims
+@inject IAuthService AuthService
+@inject NavigationManager NavigationManager
+
+<div class="row justify-content-center align-items-center min-vh-100 py-5" style="margin-top: -5vh;">
+    <div class="col-lg-8">
+        <div class="card shadow-lg animate-fade-in border-0 overflow-hidden">
+            <div class="row g-0">
+                <!-- Left Panel: Form -->
+                <div class="col-md-7 p-5">
+                    <div class="mb-4 d-flex align-items-center gap-3">
+                        <img src="shopimotologo.png" alt="Shopimoto" height="55" />
+                        <div>
+                            <h2 class="fw-bold text-primary mb-0">Create Account</h2>
+                            <p class="text-muted mb-0">Join Shopimoto today.</p>
+                        </div>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(ErrorMessage))
+                    {
+                        <div class="alert alert-danger bg-danger bg-opacity-10 border-0 text-danger mb-4 rounded-3">
+                            <small>@ErrorMessage</small>
+                        </div>
+                    }
+
+                    <EditForm Model="RegisterModel" OnValidSubmit="HandleRegister" FormName="RegisterForm">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary class="text-danger small mb-3" />
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">First Name</label>
+                                <InputText @bind-Value="RegisterModel.FirstName" class="form-control" />
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Last Name</label>
+                                <InputText @bind-Value="RegisterModel.LastName" class="form-control" />
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Email Address</label>
+                            <InputText @bind-Value="RegisterModel.Email" class="form-control" placeholder="name@example.com" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Username (Optional)</label>
+                            <InputText @bind-Value="RegisterModel.Username" class="form-control" placeholder="Choose a username" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Age (Optional)</label>
+                            <InputNumber @bind-Value="RegisterModel.Age" class="form-control" placeholder="Your age" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">I want to be a</label>
+                            <div class="d-flex gap-3">
+                                <div class="form-check p-3 border rounded-3 w-50 text-center cursor-pointer @(RegisterModel.Role == UserRole.Buyer ? "border-primary bg-primary bg-opacity-10" : "")">
+                                    <input class="form-check-input float-none mb-2" type="radio" name="role" id="roleBuyer" checked="@(RegisterModel.Role == UserRole.Buyer)" @onchange="@(() => RegisterModel.Role = UserRole.Buyer)">
+                                    <label class="form-check-label d-block fw-bold" for="roleBuyer">Buyer</label>
+                                </div>
+                                <div class="form-check p-3 border rounded-3 w-50 text-center cursor-pointer @(RegisterModel.Role == UserRole.Seller ? "border-primary bg-primary bg-opacity-10" : "")">
+                                    <input class="form-check-input float-none mb-2" type="radio" name="role" id="roleSeller" checked="@(RegisterModel.Role == UserRole.Seller)" @onchange="@(() => RegisterModel.Role = UserRole.Seller)">
+                                    <label class="form-check-label d-block fw-bold" for="roleSeller">Seller</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <label class="form-label">Password</label>
+                                <InputText @bind-Value="RegisterModel.Password" type="password" class="form-control" />
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <label class="form-label">Confirm Password</label>
+                                <InputText @bind-Value="RegisterModel.ConfirmPassword" type="password" class="form-control" />
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100 py-3 shadow-sm mb-4">
+                            Create Account
+                        </button>
+
+                        <div class="text-center">
+                            <p class="text-muted small mb-0">Already have an account? <a href="/login" class="fw-semibold">Sign in</a></p>
+                        </div>
+                    </EditForm>
+                </div>
+                
+                <!-- Right Panel: Decoration -->
+                <div class="col-md-5 bg-light d-none d-md-block position-relative overflow-hidden" style="background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));">
+                    <div class="position-absolute top-50 start-50 translate-middle text-center text-white p-4 w-100">
+                        <img src="shopimotologo.png" alt="Shopimoto" height="120" class="mb-4 bg-white rounded-3 p-2 bg-opacity-75 backdrop-blur shadow-sm" />
+                        <p class="opacity-75">The world's most elegant marketplace.</p>
+                        <div class="mt-5 p-3 bg-white bg-opacity-10 rounded-3 border border-white border-opacity-10 backdrop-blur">
+                            <p class="mb-0 small">"Simple, beautiful, and authentic."</p>
+                        </div>
+                    </div>
+                    <!-- Decorative Circles -->
+                    <div class="position-absolute top-0 end-0 p-5 rounded-circle bg-white opacity-10" style="width: 200px; height: 200px; transform: translate(50%, -50%);"></div>
+                    <div class="position-absolute bottom-0 start-0 p-5 rounded-circle bg-white opacity-10" style="width: 300px; height: 300px; transform: translate(-30%, 30%);"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [SupplyParameterFromForm]
+    public RegisterViewModel RegisterModel { get; set; } = new();
+
+    public string ErrorMessage { get; set; } = "";
+
+    [CascadingParameter]
+    public HttpContext? HttpContext { get; set; }
+
+    public async Task HandleRegister()
+    {
+        try
+        {
+            var user = await AuthService.RegisterAsync(
+                RegisterModel.Email, 
+                RegisterModel.Password, 
+                RegisterModel.FirstName, 
+                RegisterModel.LastName,
+                RegisterModel.Username,
+                RegisterModel.Age,
+                RegisterModel.Role
+            );
+            
+            // Auto Login after register
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name, user.Email),
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Role, user.Role.ToString()),
+                new Claim("ProfilePictureUrl", user.ProfilePictureUrl ?? "")
+            };
+
+            var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            var principal = new ClaimsPrincipal(identity);
+
+            if (HttpContext is not null)
+            {
+                await HttpContext.SignInAsync(principal);
+                NavigationManager.NavigateTo("/");
+            }
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = ex.Message;
+        }
+    }
+
+    public class RegisterViewModel
+    {
+        [Required]
+        public string FirstName { get; set; } = "";
+
+        [Required]
+        public string LastName { get; set; } = "";
+
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; } = "";
+        
+        public string Username { get; set; } = "";
+        
+        public int? Age { get; set; }
+
+        [Required]
+        public UserRole Role { get; set; } = UserRole.Buyer;
+
+        [Required]
+        [MinLength(6, ErrorMessage = "Password must be at least 6 characters long.")]
+        public string Password { get; set; } = "";
+
+        [Required]
+        [Compare(nameof(Password), ErrorMessage = "Passwords do not match.")]
+        public string ConfirmPassword { get; set; } = "";
+    }
+}

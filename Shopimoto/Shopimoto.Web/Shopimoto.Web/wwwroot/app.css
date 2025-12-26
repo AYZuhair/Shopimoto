@@ -1,0 +1,278 @@
+/* Google Fonts Import */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+
+:root {
+    /* Unique & Pleasant Palette: Deep Teal & Terra Cotta */
+    --primary-color: #0F766E;
+    /* Deep Teal (Sophisticated, Nature-inspired) */
+    --primary-hover: #0d635d;
+    --primary-light: #CCFBF1;
+    /* Soft Mint */
+
+    --secondary-color: #E29578;
+    /* Terra Cotta (Warm, Ceramic feel) */
+    --accent-color: #FFDDD2;
+    /* Soft Peach */
+
+    --text-primary: #1F2937;
+    /* Warm Dark Grey */
+    --text-secondary: #6B7280;
+    /* Neutral Grey */
+
+    --border-radius: 20px;
+    /* Modern Softness */
+    --btn-radius: 980px;
+    /* Pill */
+    --transition-speed: 0.3s;
+
+    /* Chrome / Glass Effects */
+    --glass-bg: rgba(255, 255, 255, 0.75);
+    --glass-border: 1px solid rgba(255, 255, 255, 0.5);
+    --glass-shadow: 0 8px 32px 0 rgba(15, 118, 110, 0.08);
+    /* Teal-tinted shadow */
+    --backdrop-blur: blur(24px);
+}
+
+body {
+    font-family: 'Outfit', sans-serif;
+    color: var(--text-primary);
+    margin: 0;
+    padding: 0;
+    -webkit-font-smoothing: antialiased;
+    background-color: #F8FAFC;
+
+    /* Unique Mesh Gradient: Mint, Peach, and Soft White */
+    background-image:
+        radial-gradient(at 0% 0%, rgba(204, 251, 241, 0.6) 0, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(204, 251, 241, 0.4) 0, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(226, 232, 240, 0.5) 0, transparent 50%),
+        radial-gradient(at 0% 100%, rgba(255, 255, 255, 0.8) 0, transparent 50%);
+    background-attachment: fixed;
+    min-height: 100vh;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    color: var(--text-primary);
+}
+
+a {
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: all var(--transition-speed);
+}
+
+a:hover {
+    color: var(--secondary-color);
+}
+
+/* --- Layout --- */
+.page {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+main {
+    flex: 1;
+    padding: 2.5rem 0;
+}
+
+/* --- Navbar (Refined Glass) --- */
+.navbar-custom {
+    background: rgba(255, 255, 255, 0.85);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    backdrop-filter: saturate(180%) blur(20px);
+    border-bottom: 1px solid rgba(15, 118, 110, 0.1);
+    padding: 1rem 3rem;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.navbar-brand {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--primary-color);
+    letter-spacing: -0.03em;
+}
+
+.nav-links {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+}
+
+.nav-link {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    font-weight: 500;
+    padding: 0.6rem 1.2rem;
+    border-radius: var(--btn-radius);
+    transition: all 0.2s;
+}
+
+.nav-link:hover,
+.nav-link.active {
+    color: var(--primary-color);
+    background: var(--primary-light);
+}
+
+/* --- Glass Cards --- */
+.card {
+    background: rgba(255, 255, 255, 0.9);
+    /* Much more opaque */
+    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 1);
+    /* Solid white border for definition */
+    border-radius: var(--border-radius);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    /* Classic strong shadow */
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.4s ease;
+    overflow: hidden;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.card-img-top {
+    transition: transform 0.6s ease;
+}
+
+.card:hover .card-img-top {
+    transform: scale(1.05);
+}
+
+.card-body {
+    padding: 1.75rem;
+}
+
+.card-title {
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+/* --- Minimal Buttons (Teal & Terra Cotta) --- */
+.btn {
+    border-radius: var(--btn-radius);
+    padding: 0.75rem 1.75rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    letter-spacing: 0.01em;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    color: white;
+    box-shadow: 0 4px 6px -1px rgba(15, 118, 110, 0.3);
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(15, 118, 110, 0.4);
+}
+
+.btn-secondary {
+    background-color: white;
+    color: var(--primary-color);
+    border: 1px solid #D1D5DB;
+    /* Distinct grey border */
+}
+
+.btn-secondary:hover {
+    border-color: var(--primary-color);
+    background-color: #F3F4F6;
+}
+
+/* --- Forms (High Visibility) --- */
+.form-control {
+    border-radius: 12px;
+    border: 1px solid #D1D5DB;
+    /* Specific grey border for visibility */
+    background: #FFFFFF;
+    /* Pure white background */
+    padding: 1rem 1.25rem;
+    font-size: 1rem;
+    transition: all 0.2s;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.form-control:focus {
+    outline: none;
+    background: white;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.2);
+}
+
+.form-label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    /* Darker text for labels */
+    margin-bottom: 0.5rem;
+    margin-left: 0.25rem;
+}
+
+/* --- Typography --- */
+.text-primary {
+    color: var(--primary-color) !important;
+}
+
+.text-muted {
+    color: var(--text-secondary) !important;
+}
+
+.badge {
+    padding: 0.5em 1em;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.75rem;
+    background: var(--primary-light);
+    color: var(--primary-color);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+/* --- Animations --- */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+        filter: blur(5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+        filter: blur(0);
+    }
+}
+
+.animate-fade-in {
+    animation: fadeInUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+/* Container width fix */
+.container {
+    max-width: 1200px;
+}

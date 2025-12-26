@@ -1,0 +1,113 @@
+@page "/orders"
+@using Shopimoto.Application.Interfaces
+@using Shopimoto.Domain.Entities
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
+@inject IOrderService OrderService
+@inject AuthenticationStateProvider AuthStateProvider
+@rendermode InteractiveServer
+
+<div class="row mb-5 fade-in">
+    <div class="col-12 text-center">
+        <h2 class="display-5 fw-bold text-primary mb-3">My Orders</h2>
+        <p class="text-muted lead">View your past purchases.</p>
+    </div>
+</div>
+
+@if (IsLoading)
+{
+    <div class="text-center py-5">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+}
+else if (UserOrders == null || !UserOrders.Any())
+{
+    <div class="text-center py-5 animate-fade-in">
+        <i class="bi bi-cart-x text-muted opacity-25" style="font-size: 5rem;"></i>
+        <h3 class="mt-4 fw-bold text-muted">No orders yet</h3>
+        <p class="text-muted">You haven't placed any orders.</p>
+        <a href="/" class="btn btn-primary mt-3">Start Shopping</a>
+    </div>
+}
+else
+{
+    <div class="row justify-content-center animate-fade-in">
+        <div class="col-lg-8">
+            <div class="d-grid gap-4">
+                @foreach (var order in UserOrders)
+                {
+                    <div class="card shadow-sm border-0 overflow-hidden">
+                        <div class="card-header bg-white border-bottom border-light py-3 d-flex justify-content-between align-items-center">
+                            <div>
+                                <small class="text-muted text-uppercase fw-bold">Order Placed</small>
+                                <div class="fw-bold">@order.OrderDate.ToLocalTime().ToString("MMM dd, yyyy")</div>
+                            </div>
+                            <div class="text-end">
+                                <small class="text-muted text-uppercase fw-bold">Total</small>
+                                <div class="fw-bold text-primary">@order.TotalAmount.ToString("C")</div>
+                            </div>
+                        </div>
+                        <div class="card-body p-0">
+                            <ul class="list-group list-group-flush">
+                                @foreach (var item in order.Items)
+                                {
+                                    <li class="list-group-item border-0 py-3 d-flex align-items-center px-4">
+                                        @if (!string.IsNullOrEmpty(item.Product?.ImageUrl))
+                                        {
+                                            <img src="@item.Product.ImageUrl" class="rounded me-3 border" style="width: 50px; height: 50px; object-fit: cover;" />
+                                        }
+                                        else
+                                        {
+                                            <div class="rounded me-3 bg-light d-flex align-items-center justify-content-center border" style="width: 50px; height: 50px;">
+                                                <i class="bi bi-image text-muted"></i>
+                                            </div>
+                                        }
+                                        
+                                        <div class="flex-grow-1">
+                                            <h6 class="mb-0 fw-bold">@item.Product?.Title</h6>
+                                            <small class="text-muted">Quantity: @item.Quantity</small>
+                                        </div>
+                                        
+                                        <div class="fw-bold">
+                                            @((item.UnitPrice * item.Quantity).ToString("C"))
+                                        </div>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                        <div class="card-footer bg-light border-0 py-3 px-4 d-flex justify-content-between align-items-center">
+                             <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3">
+                                @order.Status
+                            </span>
+                             <span class="text-muted small">Order #@order.Id.ToString().Substring(0, 8)</span>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private IEnumerable<Order>? UserOrders;
+    private bool IsLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity != null && user.Identity.IsAuthenticated)
+        {
+            var userIdClaim = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+            if (userIdClaim != null && Guid.TryParse(userIdClaim.Value, out Guid userId))
+            {
+                UserOrders = await OrderService.GetMyOrdersAsync(userId);
+            }
+        }
+        
+        IsLoading = false;
+    }
+}

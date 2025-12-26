@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "Bn7tEDK/270=",
+  "success": true,
+  "projectFilePath": "/Users/ahmadzuhair/Documents/Coding/Shopemoto/Shopimoto/Shopimoto.Application/Shopimoto.Application.csproj",
+  "expectedPackageFiles": [
+    "/Users/ahmadzuhair/.nuget/packages/bcrypt.net-next/4.0.3/bcrypt.net-next.4.0.3.nupkg.sha512"
+  ],
+  "logs": []
+}
