@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Shopimoto.Web")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f52b44d519292229d44c2513eac5f95bef29b41c")]
 [assembly: System.Reflection.AssemblyProductAttribute("Shopimoto.Web")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Shopimoto.Web")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

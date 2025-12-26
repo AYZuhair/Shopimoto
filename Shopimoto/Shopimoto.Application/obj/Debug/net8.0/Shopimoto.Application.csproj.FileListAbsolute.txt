@@ -13,3 +13,4 @@
 /Users/ahmadzuhair/Documents/Coding/Shopemoto/Shopimoto/Shopimoto.Application/obj/Debug/net8.0/refint/Shopimoto.Application.dll
 /Users/ahmadzuhair/Documents/Coding/Shopemoto/Shopimoto/Shopimoto.Application/obj/Debug/net8.0/Shopimoto.Application.pdb
 /Users/ahmadzuhair/Documents/Coding/Shopemoto/Shopimoto/Shopimoto.Application/obj/Debug/net8.0/ref/Shopimoto.Application.dll
+/Users/ahmadzuhair/Documents/Coding/Shopemoto/Shopimoto/Shopimoto.Application/obj/Debug/net8.0/Shopimoto.Application.sourcelink.json

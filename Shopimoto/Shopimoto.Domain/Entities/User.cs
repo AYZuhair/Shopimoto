@@ -25,11 +25,20 @@ public class User
     [MaxLength(500)]
     public string ProfilePictureUrl { get; set; } = string.Empty;
 
+    [MaxLength(1000)]
+    public string Bio { get; set; } = string.Empty;
+
     [MaxLength(20)]
     public string MemberId { get; set; } = string.Empty; // e.g. "SHP-123456"
     
     public UserRole Role { get; set; }
+    
+    public List<Address> Addresses { get; set; } = new();
+    public List<Review> Reviews { get; set; } = new();
+    public List<Wishlist> Wishlists { get; set; } = new();
+    
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public bool IsBanned { get; set; } = false;
 }
 
 public enum UserRole

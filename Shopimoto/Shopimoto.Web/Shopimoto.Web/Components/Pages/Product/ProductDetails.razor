@@ -1,0 +1,255 @@
+@page "/product/{Id:guid}"
+@using Shopimoto.Application.Interfaces
+@using Shopimoto.Domain.Entities
+@using Microsoft.AspNetCore.Authorization
+@inject IProductService ProductService
+@inject ICartService CartService
+@inject IReviewService ReviewService
+@inject IWishlistService WishlistService
+@inject AuthenticationStateProvider AuthStateProvider
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
+
+<div class="container fade-in mb-5">
+    @if (Product == null)
+    {
+         <div class="text-center py-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row g-5">
+            <div class="col-md-6">
+                 @if (!string.IsNullOrEmpty(Product.ImageUrl))
+                {
+                    <img src="@Product.ImageUrl" class="img-fluid rounded shadow-sm w-100" alt="@Product.Title" style="object-fit: cover; max-height: 500px;">
+                }
+                else
+                {
+                    <div class="bg-light d-flex align-items-center justify-content-center rounded shadow-sm" style="height: 400px;">
+                        <span class="text-muted fs-4">No Image Available</span>
+                    </div>
+                }
+            </div>
+            <div class="col-md-6">
+                <div class="d-flex justify-content-between align-items-start">
+                    <h1 class="display-6 fw-bold text-primary mb-2">@Product.Title</h1>
+                    <button class="btn btn-outline-danger border-0" @onclick="ToggleWishlist" title="@(IsInWishlist ? "Remove from Wishlist" : "Add to Wishlist")">
+                        <i class="bi @(IsInWishlist ? "bi-heart-fill" : "bi-heart") fs-4"></i>
+                    </button>
+                </div>
+                
+                <div class="mb-3">
+                    <span class="badge bg-secondary me-2">@Product.Category</span>
+                    @if (Product.Seller != null)
+                    {
+                        <a href="/store/@Product.SellerId" class="text-decoration-none text-muted hover-underline">
+                            Sold by: <span class="fw-bold text-primary">@(Product.Seller.Username ?? Product.Seller.FirstName)</span>
+                        </a>
+                    }
+                    else
+                    {
+                         <span class="text-muted">Sold by: Unknown</span>
+                    }
+                </div>
+                
+                <h3 class="fw-bold mb-4">@Product.Price.ToString("C")</h3>
+                
+                <p class="lead text-muted mb-4">
+                    @Product.Description
+                </p>
+                
+                <div class="d-grid gap-2 d-md-block">
+                    <button class="btn btn-primary btn-lg px-5 shadow-sm" @onclick="AddToCart">
+                        <i class="bi bi-cart-plus me-2"></i> Add to Cart
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-5">
+            <div class="col-12">
+                <hr class="mb-5" />
+                <h3 class="fw-bold mb-4">Customer Reviews</h3>
+                
+                <AuthorizeView>
+                    <Authorized>
+                         <div class="card bg-light border-0 mb-4 p-4">
+                            <h5 class="fw-bold mb-3">Write a Review</h5>
+                            <EditForm Model="NewReview" OnValidSubmit="SubmitReview" Context="reviewForm">
+                                <DataAnnotationsValidator />
+                                <div class="mb-3">
+                                    <label class="form-label">Rating</label>
+                                    <div class="d-flex gap-2">
+                                        @for (int i = 1; i <= 5; i++)
+                                        {
+                                            var rating = i;
+                                            <i class="bi @(NewReview.Rating >= rating ? "bi-star-fill text-warning" : "bi-star text-muted") fs-4" 
+                                               style="cursor: pointer;" @onclick="() => NewReview.Rating = rating"></i>
+                                        }
+                                    </div>
+                                    <ValidationMessage For="@(() => NewReview.Rating)" />
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Comment</label>
+                                    <InputTextArea class="form-control" rows="3" @bind-Value="NewReview.Comment" />
+                                    <ValidationMessage For="@(() => NewReview.Comment)" />
+                                </div>
+                                <button type="submit" class="btn btn-primary">Submit Review</button>
+                            </EditForm>
+                        </div>
+                    </Authorized>
+                    <NotAuthorized>
+                        <div class="alert alert-info">
+                            Please <a href="/login" class="alert-link">login</a> to write a review.
+                        </div>
+                    </NotAuthorized>
+                </AuthorizeView>
+
+                @if (Reviews == null || !Reviews.Any())
+                {
+                    <p class="text-muted fst-italic">No reviews yet. Be the first to review!</p>
+                }
+                else
+                {
+                    <div class="d-grid gap-3">
+                        @foreach (var review in Reviews)
+                        {
+                            <div class="card border-0 shadow-sm">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <div class="fw-bold">
+                                            @(review.User?.FirstName ?? "Anonymous") @(review.User?.LastName?.FirstOrDefault() ?? '.')
+                                        </div>
+                                        <small class="text-muted">@review.CreatedAt.ToLocalTime().ToString("MMM dd, yyyy")</small>
+                                    </div>
+                                    <div class="mb-2">
+                                        @for (int i = 0; i < review.Rating; i++)
+                                        {
+                                            <i class="bi bi-star-fill text-warning small"></i>
+                                        }
+                                    </div>
+                                    <p class="mb-0 text-muted">@review.Comment</p>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>
+
+@if (ShowAlert)
+{
+     <div class="position-fixed top-0 end-0 p-3" style="z-index: 2000">
+        <div class="toast show align-items-center text-white bg-success border-0 shadow-lg" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body fw-bold">
+                    <i class="bi bi-check-circle-fill me-2"></i> @AlertMessage
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" @onclick="() => ShowAlert = false"></button>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public Guid Id { get; set; }
+
+    private Product? Product;
+    private List<Review> Reviews = new();
+    private Review NewReview = new() { Rating = 5 }; // Default 5 stars
+    private bool IsInWishlist = false;
+    private Guid UserId;
+    private bool IsLoggedIn = false;
+    private bool ShowAlert = false;
+    private string AlertMessage = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        Product = await ProductService.GetProductByIdAsync(Id);
+        if (Product == null)
+        {
+            NavigationManager.NavigateTo("/");
+            return;
+        }
+
+        Reviews = await ReviewService.GetProductReviewsAsync(Id);
+        
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        if (user.Identity?.IsAuthenticated == true)
+        {
+            IsLoggedIn = true;
+            var idClaim = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+            if (idClaim != null && Guid.TryParse(idClaim.Value, out UserId))
+            {
+                IsInWishlist = await WishlistService.IsInWishlistAsync(UserId, Id);
+            }
+        }
+    }
+
+    private async Task AddToCart()
+    {
+        if (!IsLoggedIn)
+        {
+            NavigationManager.NavigateTo("/login");
+            return;
+        }
+
+        await CartService.AddToCartAsync(UserId, Id, 1);
+        ShowToast("Added to cart!");
+    }
+
+    private async Task ToggleWishlist()
+    {
+        if (!IsLoggedIn)
+        {
+            NavigationManager.NavigateTo("/login");
+            return;
+        }
+
+        if (IsInWishlist)
+        {
+            await WishlistService.RemoveFromWishlistAsync(UserId, Id);
+            IsInWishlist = false;
+            ShowToast("Removed from wishlist.");
+        }
+        else
+        {
+            await WishlistService.AddToWishlistAsync(UserId, Id);
+            IsInWishlist = true;
+            ShowToast("Added to wishlist!");
+        }
+    }
+
+    private async Task SubmitReview()
+    {
+        if (!IsLoggedIn) return;
+        
+        NewReview.ProductId = Id;
+        NewReview.UserId = UserId;
+        NewReview.CreatedAt = DateTime.UtcNow;
+        
+        await ReviewService.AddReviewAsync(NewReview);
+        
+        Reviews = await ReviewService.GetProductReviewsAsync(Id);
+        NewReview = new Review { Rating = 5 }; // Reset
+        ShowToast("Review submitted!");
+    }
+    
+    private async void ShowToast(string message)
+    {
+        AlertMessage = message;
+        ShowAlert = true;
+        StateHasChanged();
+        await Task.Delay(3000);
+        ShowAlert = false;
+        StateHasChanged();
+    }
+}

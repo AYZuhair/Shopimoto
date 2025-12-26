@@ -27,5 +27,7 @@ public class Product
     public Guid SellerId { get; set; }
     public User? Seller { get; set; }
     
+    public List<Review> Reviews { get; set; } = new();
+    
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }

@@ -37,6 +37,11 @@ public class UserRepository : IUserRepository
         await _context.SaveChangesAsync();
     }
 
+    public async Task<List<User>> GetAllAsync()
+    {
+        return await _context.Users.ToListAsync();
+    }
+
     public async Task<bool> IsUsernameUniqueAsync(string username, Guid? excludeUserId = null)
     {
         var query = _context.Users.AsQueryable();
@@ -47,5 +52,10 @@ public class UserRepository : IUserRepository
         }
         
         return !await query.AnyAsync(u => u.Username == username);
+    }
+
+    public async Task<User?> GetByIdAsync(Guid id)
+    {
+        return await _context.Users.FindAsync(id);
     }
 }

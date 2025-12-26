@@ -10,4 +10,5 @@ public interface IProductService
     Task<Product> CreateProductAsync(Product product);
     Task UpdateProductAsync(Product product);
     Task DeleteProductAsync(Guid id);
+    Task<Shopimoto.Domain.Common.PagedResult<Product>> SearchProductsAsync(Shopimoto.Domain.DTOs.ProductSearchParams searchParams);
 }

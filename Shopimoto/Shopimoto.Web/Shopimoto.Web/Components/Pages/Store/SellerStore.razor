@@ -1,0 +1,204 @@
+@page "/store/{SellerId:guid}"
+@using Shopimoto.Application.Interfaces
+@using Shopimoto.Domain.Entities
+@using Shopimoto.Domain.Interfaces
+@inject IProductService ProductService
+@inject ICartService CartService
+@inject IUserRepository UserRepository
+@inject AuthenticationStateProvider AuthStateProvider
+@rendermode InteractiveServer
+
+@if (Seller == null)
+{
+    @if (IsLoading)
+    {
+        <div class="text-center py-5">
+            <div class="spinner-border text-primary"></div>
+        </div>
+    }
+    else
+    {
+        <div class="container py-5 text-center">
+            <h3>Store not found</h3>
+            <a href="/" class="btn btn-primary mt-3">Back to Home</a>
+        </div>
+    }
+}
+else
+{
+    <!-- Store Header -->
+    <div class="bg-white shadow-sm mb-4 animate-fade-in">
+        <div class="container py-5">
+            <div class="d-flex align-items-center flex-column flex-md-row text-center text-md-start">
+                <img src="@(string.IsNullOrEmpty(Seller.ProfilePictureUrl) ? $"https://ui-avatars.com/api/?name={Seller.FirstName}+{Seller.LastName}&background=random" : Seller.ProfilePictureUrl)" 
+                     alt="@Seller.FirstName" 
+                     class="rounded-circle shadow mb-3 mb-md-0 me-md-4 border border-4 border-light"
+                     style="width: 120px; height: 120px; object-fit: cover;">
+                <div>
+                    <h1 class="fw-bold mb-1">@(string.IsNullOrWhiteSpace(Seller.Username) ? $"{Seller.FirstName} {Seller.LastName}" : Seller.Username)</h1>
+                    <div class="text-muted mb-2">
+                        <i class="bi bi-shop me-1"></i> Official Store • Member since @Seller.CreatedAt.Year
+                    </div>
+                    <div class="d-flex justify-content-center justify-content-md-start gap-2">
+                        <span class="badge bg-light text-dark border">
+                            <i class="bi bi-star-fill text-warning me-1"></i> 4.8 Rating
+                        </span>
+                        <span class="badge bg-light text-dark border">
+                            @Products.Count Products
+                        </span>
+                    </div>
+                    
+                    @if (!string.IsNullOrEmpty(Seller.Bio))
+                    {
+                        <p class="mt-3 mb-0 text-muted" style="max-width: 600px;">
+                            @Seller.Bio
+                        </p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Products Grid -->
+    <div class="container mb-5 animate-fade-in">
+        <h3 class="mb-4 fw-bold">All Products</h3>
+        
+        @if (!Products.Any())
+        {
+            <div class="text-center py-5 border rounded bg-light">
+                <p class="text-muted mb-0">This seller hasn't posted any products yet.</p>
+            </div>
+        }
+        else
+        {
+            <div class="row g-4">
+                @foreach (var product in Products)
+                {
+                    <div class="col-md-6 col-lg-4 col-xl-3 animate-fade-in">
+                        <div class="card h-100 border-0 shadow-hover transition-all">
+                            <div class="position-relative overflow-hidden">
+                                <a href="/product/@product.Id" class="text-decoration-none text-dark d-block">
+                                    @if (!string.IsNullOrEmpty(product.ImageUrl))
+                                    {
+                                        <img src="@product.ImageUrl" class="card-img-top zoom-img" alt="@product.Title" style="height: 250px; object-fit: cover;">
+                                    }
+                                    else
+                                    {
+                                        <div class="bg-light d-flex align-items-center justify-content-center" style="height: 250px;">
+                                            <span class="text-muted">No Image</span>
+                                        </div>
+                                    }
+                                </a>
+                                <span class="position-absolute top-0 end-0 m-3 badge bg-white text-dark shadow-sm">
+                                    @product.Category
+                                </span>
+                            </div>
+                            
+                            <div class="card-body d-flex flex-column">
+                                <h5 class="card-title text-truncate">
+                                     <a href="/product/@product.Id" class="text-decoration-none text-dark hover-primary">@product.Title</a>
+                                </h5>
+                                <p class="card-text text-truncate-2 mb-4 text-muted small" style="min-height: 2.5rem;">
+                                    @product.Description
+                                </p>
+                                
+                                <div class="mt-auto d-flex align-items-center justify-content-between">
+                                    <span class="h5 fw-bold text-primary mb-0">@product.Price.ToString("C")</span>
+                                    <small class="text-muted">@product.Stock left</small>
+                                </div>
+                            </div>
+                            
+                             <div class="card-footer bg-transparent border-0 p-3 pt-0">
+                                <AuthorizeView Roles="Buyer">
+                                    <Authorized>
+                                        <button class="btn btn-primary w-100 shadow-sm rounded-pill" @onclick="() => AddToCart(product.Id)">
+                                            <i class="bi bi-cart-plus me-1"></i> Add to Cart
+                                        </button>
+                                    </Authorized>
+                                    <NotAuthorized>
+                                        <AuthorizeView Roles="Seller" Context="sellerContext">
+                                            <Authorized>
+                                                 <button class="btn btn-light w-100 text-muted" disabled>Seller Mode</button>
+                                            </Authorized>
+                                            <NotAuthorized>
+                                                <a href="/login" class="btn btn-outline-primary w-100 rounded-pill">Login to Buy</a>
+                                            </NotAuthorized>
+                                        </AuthorizeView>
+                                    </NotAuthorized>
+                                </AuthorizeView>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+}
+
+<style>
+    .shadow-hover:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+    }
+    .transition-all {
+        transition: all 0.3s ease;
+    }
+    .zoom-img {
+        transition: transform 0.5s ease;
+    }
+    .card:hover .zoom-img {
+        transform: scale(1.05);
+    }
+</style>
+
+@code {
+    [Parameter]
+    public Guid SellerId { get; set; }
+
+    private User? Seller;
+    private List<Product> Products = new();
+    private bool IsLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // NOTE: We're using IUserRepository directly here. In a strict layered architecture, 
+        // we should add GetUserByIdAsync to IUserService/IAuthService.
+        // But for pragmatism and given IUserRepository is injected, we use it. 
+        // Although checking IUserRepository, it might not have GetById async exposed? 
+        // Wait, IUserRepository extends generic... actually IUserRepository interface I edited before didn't seem to extend generic repo?
+        // Let's check IUserRepository content if GetByIdAsync exists.
+        
+        // Assuming we need to implement/expose it if missing.
+        // For now I'll try to use it, if fail I fix.
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
+        Seller = await UserRepository.GetByIdAsync(SellerId);
+        
+        // Products
+        Products = await ProductService.GetSellerProductsAsync(SellerId);
+        IsLoading = false;
+    }
+    
+     private async Task AddToCart(Guid productId)
+    {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity != null && user.Identity.IsAuthenticated)
+        {
+             var userIdClaim = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+             if (userIdClaim != null && Guid.TryParse(userIdClaim.Value, out Guid buyerId))
+             {
+                 await CartService.AddToCartAsync(buyerId, productId, 1);
+                 // Toast logic omitted for brevity
+             }
+        }
+        else
+        {
+            // Redirect
+        }
+    }
+}

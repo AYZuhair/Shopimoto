@@ -1,0 +1,184 @@
+@page "/account/addresses"
+@using Shopimoto.Application.Interfaces
+@using Shopimoto.Domain.Entities
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
+@inject IAddressService AddressService
+@inject AuthenticationStateProvider AuthStateProvider
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
+
+<div class="container fade-in">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold">My Addresses</h2>
+        <button class="btn btn-primary" @onclick="ShowAddModal">
+            <i class="bi bi-plus-lg me-2"></i>Add Address
+        </button>
+    </div>
+
+    @if (IsLoading)
+    {
+         <div class="text-center py-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    }
+    else if (Addresses == null || !Addresses.Any())
+    {
+        <div class="text-center py-5 bg-light rounded animate-fade-in">
+            <i class="bi bi-geo-alt text-muted opacity-25" style="font-size: 4rem;"></i>
+            <h4 class="mt-3 text-muted">No addresses saved</h4>
+            <p>Add an address to make checkout faster.</p>
+        </div>
+    }
+    else
+    {
+        <div class="row g-4 animate-fade-in">
+            @foreach (var address in Addresses)
+            {
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 shadow-sm border-0 @(address.IsDefault ? "border-primary border-2" : "")">
+                        <div class="card-body">
+                            @if (address.IsDefault)
+                            {
+                                <span class="badge bg-primary mb-2">Default</span>
+                            }
+                            <h5 class="card-title fw-bold">@address.Street</h5>
+                            <p class="card-text text-muted mb-1">
+                                @address.City, @address.State @address.ZipCode
+                            </p>
+                            <p class="card-text text-muted">@address.Country</p>
+                        </div>
+                        <div class="card-footer bg-transparent border-0 d-flex justify-content-between p-3">
+                             <div>
+                                @if (!address.IsDefault)
+                                {
+                                    <button class="btn btn-sm btn-outline-primary me-2" @onclick="() => SetDefault(address.Id)">Set Default</button>
+                                }
+                             </div>
+                             <div>
+                                 <button class="btn btn-sm btn-outline-danger" @onclick="() => DeleteAddress(address.Id)">
+                                     <i class="bi bi-trash"></i>
+                                 </button>
+                             </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@if (ShowModal)
+{
+    <div class="modal fade show d-block" style="background-color: rgba(0,0,0,0.5);" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add New Address</h5>
+                    <button type="button" class="btn-close" @onclick="CloseModal"></button>
+                </div>
+                <div class="modal-body">
+                    <EditForm Model="NewAddress" OnValidSubmit="SaveAddress">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+
+                        <div class="mb-3">
+                            <label class="form-label">Street</label>
+                            <InputText class="form-control" @bind-Value="NewAddress.Street" />
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">City</label>
+                                <InputText class="form-control" @bind-Value="NewAddress.City" />
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">State</label>
+                                <InputText class="form-control" @bind-Value="NewAddress.State" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Zip Code</label>
+                                <InputText class="form-control" @bind-Value="NewAddress.ZipCode" />
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Country</label>
+                                <InputText class="form-control" @bind-Value="NewAddress.Country" />
+                            </div>
+                        </div>
+                         <div class="mb-3 form-check">
+                            <InputCheckbox class="form-check-input" @bind-Value="NewAddress.IsDefault" />
+                            <label class="form-check-label">Set as Default</label>
+                        </div>
+                        
+                        <div class="d-flex justify-content-end gap-2 mt-4">
+                            <button type="button" class="btn btn-outline-secondary" @onclick="CloseModal">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Save Address</button>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private List<Address> Addresses = new();
+    private Address NewAddress = new();
+    private bool IsLoading = true;
+    private bool ShowModal = false;
+    private Guid UserId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        if (user.Identity?.IsAuthenticated == true)
+        {
+            var idClaim = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+            if (idClaim != null && Guid.TryParse(idClaim.Value, out UserId))
+            {
+                await LoadAddresses();
+            }
+        }
+        IsLoading = false;
+    }
+
+    private async Task LoadAddresses()
+    {
+        Addresses = await AddressService.GetUserAddressesAsync(UserId);
+    }
+
+    private void ShowAddModal()
+    {
+        NewAddress = new Address { UserId = UserId }; // Reset
+        ShowModal = true;
+    }
+
+    private void CloseModal()
+    {
+        ShowModal = false;
+    }
+
+    private async Task SaveAddress()
+    {
+        NewAddress.UserId = UserId; // Ensure correct user ID
+        await AddressService.AddAddressAsync(NewAddress);
+        await LoadAddresses();
+        CloseModal();
+    }
+    
+    private async Task DeleteAddress(Guid id)
+    {
+        await AddressService.DeleteAddressAsync(id);
+        await LoadAddresses();
+    }
+
+    private async Task SetDefault(Guid id)
+    {
+        await AddressService.SetDefaultAddressAsync(UserId, id);
+        await LoadAddresses();
+    }
+}

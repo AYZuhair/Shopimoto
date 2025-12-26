@@ -5,6 +5,7 @@
 @attribute [Authorize(Roles = "Buyer")]
 @inject ICartService CartService
 @inject IOrderService OrderService
+@inject IAddressService AddressService
 @inject AuthenticationStateProvider AuthStateProvider
 @inject NavigationManager NavigationManager
 @rendermode InteractiveServer
@@ -35,6 +36,38 @@ else
     <div class="row justify-content-center animate-fade-in">
         <div class="col-lg-6">
             <div class="card shadow border-0 p-4">
+                <h4 class="fw-bold mb-4">Shipping Address</h4>
+                
+                @if (Addresses == null || !Addresses.Any())
+                {
+                    <div class="alert alert-warning d-flex justify-content-between align-items-center">
+                        <span>You need a shipping address to checkout.</span>
+                        <a href="/account/addresses" class="btn btn-sm btn-outline-dark">Add Address</a>
+                    </div>
+                }
+                else
+                {
+                    <div class="mb-4">
+                        <label class="form-label">Select Address</label>
+                        <select class="form-select @(AddressError ? "is-invalid" : "")" @bind="SelectedAddressId">
+                            <option value="">-- Select Address --</option>
+                            @foreach (var addr in Addresses)
+                            {
+                                <option value="@addr.Id">@addr.Street, @addr.City, @addr.Country</option>
+                            }
+                        </select>
+                        @if (AddressError)
+                        {
+                            <div class="invalid-feedback">Please select a shipping address.</div>
+                        }
+                        <div class="mt-2 text-end">
+                            <a href="/account/addresses" class="small text-decoration-none">Manage Addresses</a>
+                        </div>
+                    </div>
+                }
+
+                <hr class="mb-4">
+                
                 <h4 class="fw-bold mb-4">Order Summary</h4>
                 
                 <ul class="list-group list-group-flush mb-4">
@@ -65,21 +98,20 @@ else
                     </div>
                 </div>
 
-                <button class="btn btn-primary w-100 py-3 shadow-sm mt-3" @onclick="PlaceOrder" disabled="@IsProcessing">
-                    @if (IsProcessing)
-                    {
-                        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                        <span>Processing...</span>
-                    }
-                    else
-                    {
-                        <span>Pay & Place Order</span>
-                    }
-                </button>
-                
-                 <a href="/cart" class="btn btn-link w-100 mt-2 text-muted text-decoration-none">
-                    Back to Cart
-                </a>
+                <div class="d-grid gap-2 mt-4">
+                     <button class="btn btn-primary py-3 shadow-sm" @onclick="PlaceOrder" disabled="@(IsProcessing || (Addresses?.Count ?? 0) == 0)">
+                        @if (IsProcessing)
+                        {
+                            <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                            <span>Processing...</span>
+                        }
+                        else
+                        {
+                            <span>Pay & Place Order</span>
+                        }
+                    </button>
+                    <a href="/cart" class="btn btn-outline-secondary py-2">Back to Cart</a>
+                </div>
             </div>
         </div>
     </div>
@@ -87,8 +119,11 @@ else
 
 @code {
     private Shopimoto.Domain.Entities.Cart? UserCart;
+    private List<Address> Addresses = new();
+    private Guid SelectedAddressId;
     private bool IsLoading = true;
     private bool IsProcessing = false;
+    private bool AddressError = false;
     private Guid BuyerId;
 
     protected override async Task OnInitializedAsync()
@@ -103,6 +138,18 @@ else
             {
                 BuyerId = userId;
                 UserCart = await CartService.GetOrCreateCartAsync(BuyerId);
+                Addresses = await AddressService.GetUserAddressesAsync(BuyerId);
+                
+                // Pre-select default address
+                var defaultAddr = Addresses.FirstOrDefault(a => a.IsDefault);
+                if (defaultAddr != null)
+                {
+                    SelectedAddressId = defaultAddr.Id;
+                }
+                else if (Addresses.Any())
+                {
+                    SelectedAddressId = Addresses.First().Id;
+                }
             }
         }
         
@@ -111,13 +158,20 @@ else
 
     private async Task PlaceOrder()
     {
+        if (SelectedAddressId == Guid.Empty)
+        {
+            AddressError = true;
+            return;
+        }
+        AddressError = false;
+
         IsProcessing = true;
         try
         {
             // Simulate payment delay
             await Task.Delay(1500); 
             
-            var orderId = await OrderService.CheckoutAsync(BuyerId);
+            var orderId = await OrderService.CheckoutAsync(BuyerId, SelectedAddressId);
             NavigationManager.NavigateTo($"/order-success/{orderId}");
         }
         catch (Exception ex)

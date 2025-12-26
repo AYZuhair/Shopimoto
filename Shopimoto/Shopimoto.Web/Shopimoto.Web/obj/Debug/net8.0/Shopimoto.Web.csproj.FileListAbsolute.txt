@@ -141,3 +141,4 @@
 /Users/ahmadzuhair/Documents/Coding/Shopemoto/Shopimoto/Shopimoto.Web/Shopimoto.Web/obj/Debug/net8.0/Shopimoto.Web.genruntimeconfig.cache
 /Users/ahmadzuhair/Documents/Coding/Shopemoto/Shopimoto/Shopimoto.Web/Shopimoto.Web/obj/Debug/net8.0/ref/Shopimoto.Web.dll
 /Users/ahmadzuhair/Documents/Coding/Shopemoto/Shopimoto/Shopimoto.Web/Shopimoto.Web/bin/Debug/net8.0/BCrypt.Net-Next.dll
+/Users/ahmadzuhair/Documents/Coding/Shopemoto/Shopimoto/Shopimoto.Web/Shopimoto.Web/obj/Debug/net8.0/Shopimoto.Web.sourcelink.json

@@ -96,6 +96,13 @@
                                         <InputNumber id="age" class="form-control" @bind-Value="UserProfile.Age" />
                                     </div>
                                 </div>
+                                <div class="col-12">
+                                    <div class="mb-1">
+                                        <label for="bio" class="form-label">Bio / Store Description</label>
+                                        <InputTextArea id="bio" class="form-control" rows="3" @bind-Value="UserProfile.Bio" placeholder="Tell us about your store..." />
+                                        <div class="form-text">This will be displayed on your store profile.</div>
+                                    </div>
+                                </div>
 
                                 <!-- Avatar Section -->
                                 <div class="col-12 mt-4">
@@ -203,7 +210,7 @@
         IsLoading = false;
     }
 
-    private async Task LoadFiles(InputFileChangeEventArgs e)
+    private void LoadFiles(InputFileChangeEventArgs e)
     {
         uploadedFile = e.File;
         // Preview logic could go here if we want immediate feedback

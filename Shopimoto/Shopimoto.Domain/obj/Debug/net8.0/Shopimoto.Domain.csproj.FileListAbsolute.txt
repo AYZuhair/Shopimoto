@@ -9,3 +9,4 @@
 /Users/ahmadzuhair/Documents/Coding/Shopemoto/Shopimoto/Shopimoto.Domain/obj/Debug/net8.0/refint/Shopimoto.Domain.dll
 /Users/ahmadzuhair/Documents/Coding/Shopemoto/Shopimoto/Shopimoto.Domain/obj/Debug/net8.0/Shopimoto.Domain.pdb
 /Users/ahmadzuhair/Documents/Coding/Shopemoto/Shopimoto/Shopimoto.Domain/obj/Debug/net8.0/ref/Shopimoto.Domain.dll
+/Users/ahmadzuhair/Documents/Coding/Shopemoto/Shopimoto/Shopimoto.Domain/obj/Debug/net8.0/Shopimoto.Domain.sourcelink.json

@@ -17,3 +17,4 @@
 /Users/ahmadzuhair/Documents/Coding/Shopemoto/Shopimoto/Shopimoto.Infrastructure/obj/Debug/net8.0/Shopimoto.Infrastructure.pdb
 /Users/ahmadzuhair/Documents/Coding/Shopemoto/Shopimoto/Shopimoto.Infrastructure/obj/Debug/net8.0/Shopimoto.Infrastructure.genruntimeconfig.cache
 /Users/ahmadzuhair/Documents/Coding/Shopemoto/Shopimoto/Shopimoto.Infrastructure/obj/Debug/net8.0/ref/Shopimoto.Infrastructure.dll
+/Users/ahmadzuhair/Documents/Coding/Shopemoto/Shopimoto/Shopimoto.Infrastructure/obj/Debug/net8.0/Shopimoto.Infrastructure.sourcelink.json

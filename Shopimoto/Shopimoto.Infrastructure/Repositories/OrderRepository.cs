@@ -31,22 +31,33 @@ public class OrderRepository : IOrderRepository
             .ToListAsync();
     }
 
-    public async Task<IEnumerable<Order>> GetOrdersBySellerIdAsync(Guid sellerId)
+    public async Task<List<Order>> GetOrdersBySellerIdAsync(Guid sellerId)
     {
         // Find orders where at least one item belongs to the seller
         return await _context.Orders
             .Include(o => o.Items)
             .ThenInclude(i => i.Product)
-            .Where(o => o.Items.Any(i => i.Product.SellerId == sellerId))
+            .Where(o => o.Items.Any(i => i.Product!.SellerId == sellerId))
             .OrderByDescending(o => o.OrderDate)
             .ToListAsync();
     }
 
-    public async Task<Order?> GetOrderByIdAsync(Guid orderId)
+    public async Task<Order?> GetByIdAsync(Guid orderId)
     {
         return await _context.Orders
             .Include(o => o.Items)
             .ThenInclude(i => i.Product)
             .FirstOrDefaultAsync(o => o.Id == orderId);
+    }
+
+    public async Task UpdateAsync(Order order)
+    {
+        _context.Entry(order).State = EntityState.Modified;
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task<List<Order>> GetAllAsync()
+    {
+        return await _context.Orders.ToListAsync();
     }
 }

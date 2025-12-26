@@ -59,13 +59,13 @@ else
                                     <tr>
                                         <td class="ps-4 py-3">
                                             <div class="d-flex align-items-center">
-                                                @if (!string.IsNullOrEmpty(item.Product.ImageUrl))
+                                                @if (!string.IsNullOrEmpty(item.Product?.ImageUrl))
                                                 {
-                                                    <img src="@item.Product.ImageUrl" alt="@item.Product.Title" class="rounded-3 me-3" style="width: 60px; height: 60px; object-fit: cover;">
+                                                    <img src="@item.Product!.ImageUrl" alt="@item.Product!.Title" class="rounded-3 me-3" style="width: 60px; height: 60px; object-fit: cover;">
                                                 }
                                                 <div>
-                                                    <h6 class="mb-0 fw-bold text-dark">@item.Product.Title</h6>
-                                                    <small class="text-muted">@item.Product.Price.ToString("C")</small>
+                                                    <h6 class="mb-0 fw-bold text-dark">@item.Product!.Title</h6>
+                                                    <small class="text-muted">@item.Product!.Price.ToString("C")</small>
                                                 </div>
                                             </div>
                                         </td>
@@ -103,7 +103,7 @@ else
                 <h5 class="fw-bold mb-4">Order Summary</h5>
                 <div class="d-flex justify-content-between mb-2">
                     <span class="text-muted">Subtotal</span>
-                    <span class="fw-bold">@UserCart.Items.Sum(i => i.Product.Price * i.Quantity).ToString("C")</span>
+                    <span class="fw-bold">@UserCart.Items.Sum(i => i.Product!.Price * i.Quantity).ToString("C")</span>
                 </div>
                 <div class="d-flex justify-content-between mb-4">
                     <span class="text-muted">Shipping</span>
@@ -112,7 +112,7 @@ else
                 <hr class="my-3">
                 <div class="d-flex justify-content-between mb-4">
                     <span class="h5 fw-bold mb-0">Total</span>
-                    <span class="h5 fw-bold text-primary mb-0">@UserCart.Items.Sum(i => i.Product.Price * i.Quantity).ToString("C")</span>
+                    <span class="h5 fw-bold text-primary mb-0">@UserCart.Items.Sum(i => i.Product!.Price * i.Quantity).ToString("C")</span>
                 </div>
                 <button class="btn btn-primary w-100 py-3 shadow-sm mb-3" @onclick="ProceedToCheckout">
                     Proceed to Checkout

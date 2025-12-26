@@ -76,6 +76,12 @@
             return;
         }
 
+        if (user.IsBanned)
+        {
+            ErrorMessage = "Your account has been suspended. Please contact support.";
+            return;
+        }
+
         var claims = new List<Claim>
         {
             new Claim(ClaimTypes.Name, user.Email),

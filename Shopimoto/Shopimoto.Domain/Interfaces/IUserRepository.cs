@@ -9,4 +9,6 @@ public interface IUserRepository
     Task<bool> ExistsAsync(string email);
     Task UpdateAsync(User user);
     Task<bool> IsUsernameUniqueAsync(string username, Guid? excludeUserId = null);
+    Task<User?> GetByIdAsync(Guid id);
+    Task<List<User>> GetAllAsync();
 }

@@ -1,0 +1,181 @@
+@page "/account/orders"
+@using Shopimoto.Application.Interfaces
+@using Shopimoto.Domain.Entities
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
+@inject IOrderService OrderService
+@inject AuthenticationStateProvider AuthStateProvider
+@rendermode InteractiveServer
+
+<div class="container-fluid px-4 mt-4 fade-in">
+    @if (IsLoading)
+    {
+        <div class="text-center py-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    }
+    else if (UserOrders == null || !UserOrders.Any())
+    {
+        <div class="text-center py-5 animate-fade-in">
+             <div class="icon-square bg-light text-muted rounded-circle p-4 d-inline-block mb-3">
+                <i class="bi bi-cart-x fs-1"></i>
+            </div>
+            <h3 class="fw-bold text-dark mb-1">No orders yet</h3>
+            <p class="text-muted">You haven't placed any orders.</p>
+            <a href="/" class="btn btn-primary rounded-pill px-4 mt-2">Start Shopping</a>
+        </div>
+    }
+    else
+    {
+        <div class="row justify-content-center animate-fade-in">
+            <div class="col-lg-12">
+                <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+                     <h4 class="fw-bold mb-0">My Orders</h4>
+                </div>
+                
+                <div class="d-grid gap-4">
+                    @foreach (var order in UserOrders)
+                    {
+                        <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                            <div class="card-header bg-white border-bottom border-light py-3 px-4 d-flex justify-content-between align-items-center">
+                                <div class="d-flex align-items-center gap-4">
+                                    <div>
+                                        <p class="text-muted text-uppercase x-small fw-bold mb-0 tracking-wide">Date Placed</p>
+                                        <div class="fw-bold text-dark">@order.OrderDate.ToLocalTime().ToString("MMM dd, yyyy")</div>
+                                    </div>
+                                    <div>
+                                         <p class="text-muted text-uppercase x-small fw-bold mb-0 tracking-wide">Total</p>
+                                        <div class="fw-bold text-dark">@order.TotalAmount.ToString("C")</div>
+                                    </div>
+                                     <div class="d-none d-md-block">
+                                         <p class="text-muted text-uppercase x-small fw-bold mb-0 tracking-wide">Ship To</p>
+                                         <div class="small text-truncate" style="max-width: 200px;">
+                                             @if(!string.IsNullOrEmpty(order.ShippingStreet))
+                                             {
+                                                 @($"{order.ShippingStreet}, {order.ShippingCity}")
+                                             }
+                                             else
+                                             {
+                                                 <span>Digital Delivery</span>
+                                             }
+                                         </div>
+                                    </div>
+                                </div>
+                                <div class="text-end">
+                                     <span class="badge @GetStatusBadgeClass(order.Status) rounded-pill fw-normal px-3 py-1">
+                                        @order.Status
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="card-body p-0">
+                                <ul class="list-group list-group-flush">
+                                    @foreach (var item in order.Items)
+                                    {
+                                        <li class="list-group-item border-0 py-3 d-flex align-items-center px-4 hover-bg-light transition-all">
+                                            @if (!string.IsNullOrEmpty(item.Product?.ImageUrl))
+                                            {
+                                                <img src="@item.Product.ImageUrl" class="rounded-3 me-3 border-0 shadow-sm" style="width: 60px; height: 60px; object-fit: cover;" />
+                                            }
+                                            else
+                                            {
+                                                <div class="rounded-3 me-3 bg-light d-flex align-items-center justify-content-center shadow-sm" style="width: 60px; height: 60px;">
+                                                    <i class="bi bi-image text-muted"></i>
+                                                </div>
+                                            }
+                                            
+                                            <div class="flex-grow-1">
+                                                <h6 class="mb-1 fw-bold text-dark">@item.Product?.Title</h6>
+                                                <small class="text-muted">Quantity: @item.Quantity</small>
+                                            </div>
+                                            
+                                            <div class="fw-bold text-dark">
+                                                @((item.UnitPrice * item.Quantity).ToString("C"))
+                                            </div>
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
+                            @if(order.Status == OrderStatus.Pending || order.Status == OrderStatus.Processing)
+                            {
+                                <div class="card-footer bg-white border-top border-light py-3 px-4 text-end">
+                                    <button class="btn btn-sm btn-link text-danger text-decoration-none fw-bold p-0" @onclick="() => CancelOrder(order.Id)">
+                                        Cancel Order
+                                    </button>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<style>
+    .tracking-wide { letter-spacing: 0.1em; }
+    .x-small { font-size: 0.70rem; }
+    .hover-bg-light:hover { background-color: #f8f9fa; }
+    .transition-all { transition: all 0.2s; }
+</style>
+
+@code {
+    private IEnumerable<Order>? UserOrders;
+    private bool IsLoading = true;
+    private Guid currentUserId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity != null && user.Identity.IsAuthenticated)
+        {
+            var userIdClaim = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+            if (userIdClaim != null && Guid.TryParse(userIdClaim.Value, out Guid userId))
+            {
+                currentUserId = userId;
+                await LoadOrders();
+            }
+        }
+        
+        IsLoading = false;
+    }
+    
+    private async Task LoadOrders()
+    {
+        UserOrders = await OrderService.GetMyOrdersAsync(currentUserId);
+    }
+
+    private async Task CancelOrder(Guid orderId)
+    {
+        bool confirmed = true; // In real app, show modal confirmation
+        if(confirmed)
+        {
+            try
+            {
+                await OrderService.CancelOrderAsync(orderId, currentUserId);
+                await LoadOrders(); // Refresh list
+            }
+            catch(Exception ex)
+            {
+                // Handle error
+                Console.WriteLine(ex.Message);
+            }
+        }
+    }
+
+    private string GetStatusBadgeClass(OrderStatus status)
+    {
+        return status switch
+        {
+            OrderStatus.Pending => "bg-warning bg-opacity-10 text-warning",
+            OrderStatus.Processing => "bg-info bg-opacity-10 text-info",
+            OrderStatus.Shipped => "bg-primary bg-opacity-10 text-primary",
+            OrderStatus.Delivered => "bg-success bg-opacity-10 text-success",
+            OrderStatus.Cancelled => "bg-danger bg-opacity-10 text-danger",
+            _ => "bg-secondary bg-opacity-10 text-secondary"
+        };
+    }
+}

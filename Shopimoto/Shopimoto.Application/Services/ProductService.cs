@@ -42,4 +42,9 @@ public class ProductService : IProductService
     {
         await _productRepository.DeleteAsync(id);
     }
+
+    public async Task<Shopimoto.Domain.Common.PagedResult<Product>> SearchProductsAsync(Shopimoto.Domain.DTOs.ProductSearchParams searchParams)
+    {
+        return await _productRepository.SearchAsync(searchParams);
+    }
 }

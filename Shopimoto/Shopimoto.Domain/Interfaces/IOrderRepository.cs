@@ -6,6 +6,8 @@ public interface IOrderRepository
 {
     Task<Order> CreateOrderAsync(Order order);
     Task<IEnumerable<Order>> GetOrdersByUserIdAsync(Guid userId);
-    Task<IEnumerable<Order>> GetOrdersBySellerIdAsync(Guid sellerId);
-    Task<Order?> GetOrderByIdAsync(Guid orderId);
+    Task<List<Order>> GetOrdersBySellerIdAsync(Guid sellerId);
+    Task<Order?> GetByIdAsync(Guid id);
+    Task UpdateAsync(Order order);
+    Task<List<Order>> GetAllAsync();
 }

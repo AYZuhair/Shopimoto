@@ -29,6 +29,12 @@ builder.Services.AddScoped<Shopimoto.Domain.Interfaces.ICartRepository, Shopimot
 builder.Services.AddScoped<Shopimoto.Application.Interfaces.ICartService, Shopimoto.Application.Services.CartService>();
 builder.Services.AddScoped<Shopimoto.Domain.Interfaces.IOrderRepository, Shopimoto.Infrastructure.Repositories.OrderRepository>();
 builder.Services.AddScoped<Shopimoto.Application.Interfaces.IOrderService, Shopimoto.Application.Services.OrderService>();
+builder.Services.AddScoped<Shopimoto.Domain.Interfaces.IAddressRepository, Shopimoto.Infrastructure.Repositories.AddressRepository>();
+builder.Services.AddScoped<Shopimoto.Application.Interfaces.IAddressService, Shopimoto.Application.Services.AddressService>();
+builder.Services.AddScoped<Shopimoto.Domain.Interfaces.IReviewRepository, Shopimoto.Infrastructure.Repositories.ReviewRepository>();
+builder.Services.AddScoped<Shopimoto.Application.Interfaces.IReviewService, Shopimoto.Application.Services.ReviewService>();
+builder.Services.AddScoped<Shopimoto.Domain.Interfaces.IWishlistRepository, Shopimoto.Infrastructure.Repositories.WishlistRepository>();
+builder.Services.AddScoped<Shopimoto.Application.Interfaces.IWishlistService, Shopimoto.Application.Services.WishlistService>();
 builder.Services.AddAuthentication(Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
@@ -41,11 +47,19 @@ builder.Services.AddAuthorization();
 builder.Services.AddCascadingAuthenticationState();
 
 // Add services to the container.
+builder.Services.AddScoped<Shopimoto.Infrastructure.Data.DatabaseSeeder>();
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
 
 var app = builder.Build();
+
+// Seed Database
+using (var scope = app.Services.CreateScope())
+{
+    var seeder = scope.ServiceProvider.GetRequiredService<DatabaseSeeder>();
+    await seeder.SeedAsync();
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

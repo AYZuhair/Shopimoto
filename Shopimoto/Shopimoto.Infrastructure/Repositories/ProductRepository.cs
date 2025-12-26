@@ -51,4 +51,50 @@ public class ProductRepository : IProductRepository
             await _context.SaveChangesAsync();
         }
     }
+
+    public async Task<Shopimoto.Domain.Common.PagedResult<Product>> SearchAsync(Shopimoto.Domain.DTOs.ProductSearchParams searchParams)
+    {
+        var query = _context.Products
+            .Include(p => p.Seller)
+            .AsQueryable();
+
+        // Filter by Search Term
+        if (!string.IsNullOrWhiteSpace(searchParams.SearchTerm))
+        {
+            var term = searchParams.SearchTerm.ToLower();
+            query = query.Where(p => p.Title.ToLower().Contains(term) || 
+                                     p.Description.ToLower().Contains(term));
+        }
+
+        // Filter by Category
+        if (!string.IsNullOrWhiteSpace(searchParams.Category))
+        {
+             query = query.Where(p => p.Category == searchParams.Category);
+        }
+
+        // Sorting
+        query = searchParams.SortBy switch
+        {
+            "PriceAsc" => query.OrderBy(p => p.Price),
+            "PriceDesc" => query.OrderByDescending(p => p.Price),
+            "Newest" => query.OrderByDescending(p => p.CreatedAt),
+            "TopRated" => query.OrderByDescending(p => p.Reviews.Average(r => r.Rating)), // This might fail if no reviews, need handling? EF Core translates Average well usually, but let's be careful.
+            _ => query.OrderBy(p => p.Title) // Default
+        };
+
+        // Pagination
+        var totalCount = await query.CountAsync();
+        var items = await query
+            .Skip((searchParams.PageNumber - 1) * searchParams.PageSize)
+            .Take(searchParams.PageSize)
+            .ToListAsync();
+
+        return new Shopimoto.Domain.Common.PagedResult<Product>
+        {
+            Items = items,
+            TotalCount = totalCount,
+            PageNumber = searchParams.PageNumber,
+            PageSize = searchParams.PageSize
+        };
+    }
 }

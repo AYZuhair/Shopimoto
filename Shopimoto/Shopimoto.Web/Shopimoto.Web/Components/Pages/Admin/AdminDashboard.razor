@@ -1,0 +1,242 @@
+@page "/admin/dashboard"
+@using Microsoft.AspNetCore.Authorization
+@using Shopimoto.Application.Interfaces
+@using Shopimoto.Domain.Entities
+@using Shopimoto.Domain.Interfaces
+@attribute [Authorize(Roles = "Admin")]
+@inject IUserRepository UserRepository
+@inject IOrderService OrderService
+@inject IProductService ProductService
+@rendermode InteractiveServer
+
+<div class="container-fluid px-4 mt-4 fade-in">
+    @if (IsLoading)
+    {
+        <div class="text-center py-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    }
+    else
+    {
+        <!-- Stats Row -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-3">
+                <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden">
+                    <div class="card-body p-4 d-flex align-items-center justify-content-between">
+                        <div>
+                            <p class="text-muted small fw-bold text-uppercase mb-1 tracking-wide">Total Users</p>
+                            <h2 class="fw-bolder mb-0 text-dark">@Users.Count</h2>
+                        </div>
+                        <div class="icon-square bg-light text-primary rounded-3 p-3">
+                             <i class="bi bi-people-fill fs-4"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                 <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden">
+                    <div class="card-body p-4 d-flex align-items-center justify-content-between">
+                         <div>
+                            <p class="text-muted small fw-bold text-uppercase mb-1 tracking-wide">Products</p>
+                            <h2 class="fw-bolder mb-0 text-dark">@TotalProducts</h2>
+                        </div>
+                        <div class="icon-square bg-light text-success rounded-3 p-3">
+                             <i class="bi bi-box-seam-fill fs-4"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                 <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden">
+                    <div class="card-body p-4 d-flex align-items-center justify-content-between">
+                         <div>
+                            <p class="text-muted small fw-bold text-uppercase mb-1 tracking-wide">Orders</p>
+                            <h2 class="fw-bolder mb-0 text-dark">@TotalOrders</h2>
+                        </div>
+                        <div class="icon-square bg-light text-warning rounded-3 p-3">
+                             <i class="bi bi-bag-fill fs-4"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+             <div class="col-md-3">
+                 <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden">
+                    <div class="card-body p-4 d-flex align-items-center justify-content-between">
+                         <div>
+                            <p class="text-muted small fw-bold text-uppercase mb-1 tracking-wide">Revenue</p>
+                            <h2 class="fw-bolder mb-0 text-dark">@TotalRevenue.ToString("C0")</h2>
+                        </div>
+                        <div class="icon-square bg-light text-info rounded-3 p-3">
+                             <i class="bi bi-graph-up-arrow fs-4"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Management -->
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+            <div class="card-header bg-white py-4 px-4 border-bottom border-light d-flex justify-content-between align-items-center">
+                <h5 class="fw-bold mb-0">Users</h5>
+                <div class="position-relative" style="width: 250px;">
+                    <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
+                    <input type="text" 
+                           class="form-control form-control-sm ps-5 border-0 bg-light rounded-pill py-2" 
+                           placeholder="Search..." 
+                           @bind="SearchTerm" 
+                           @bind:event="oninput" />
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="ps-4 py-3 text-secondary text-uppercase x-small fw-bold border-0">User</th>
+                            <th class="py-3 text-secondary text-uppercase x-small fw-bold border-0">Role</th>
+                            <th class="py-3 text-secondary text-uppercase x-small fw-bold border-0">Joined</th>
+                            <th class="py-3 text-secondary text-uppercase x-small fw-bold border-0">Status</th>
+                            <th class="pe-4 py-3 text-end text-secondary text-uppercase x-small fw-bold border-0">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var user in FilteredUsers)
+                        {
+                            <tr class="border-light">
+                                <td class="ps-4 py-3">
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-circle bg-light text-dark fw-bold me-3 rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                            @(user.FirstName.FirstOrDefault())@(user.LastName.FirstOrDefault())
+                                        </div>
+                                        <div>
+                                            <div class="fw-semibold text-dark">@user.FirstName @user.LastName</div>
+                                            <div class="small text-muted">@user.Email</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="py-3">
+                                    @if(user.Role == UserRole.Admin)
+                                    {
+                                        <span class="badge bg-dark rounded-pill fw-normal px-3 py-1">Admin</span>
+                                    }
+                                    else if(user.Role == UserRole.Seller)
+                                    {
+                                        <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill fw-normal px-3 py-1">Seller</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary bg-opacity-10 text-secondary rounded-pill fw-normal px-3 py-1">Buyer</span>
+                                    }
+                                </td>
+                                <td class="py-3">
+                                    <span class="text-secondary small">@user.CreatedAt.ToLocalTime().ToString("MMM dd, yyyy")</span>
+                                </td>
+                                <td class="py-3">
+                                    @if(user.IsBanned)
+                                    {
+                                        <span class="badge bg-danger bg-opacity-10 text-danger rounded-pill fw-normal px-2"><i class="bi bi-dot"></i> Banned</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-success bg-opacity-10 text-success rounded-pill fw-normal px-2"><i class="bi bi-dot"></i> Active</span>
+                                    }
+                                </td>
+                                <td class="pe-4 text-end py-3">
+                                    @if (user.Role != UserRole.Admin)
+                                    {
+                                        @if (user.IsBanned)
+                                        {
+                                             <button class="btn btn-sm btn-link text-success text-decoration-none p-0 fw-bold" @onclick="() => ToggleBan(user)">
+                                                Unban
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <button class="btn btn-sm btn-link text-danger text-decoration-none p-0 fw-bold op-50 hover-opacity-100" @onclick="() => ToggleBan(user)">
+                                                Ban
+                                            </button>
+                                        }
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+             @if (!FilteredUsers.Any())
+            {
+               <div class="text-center py-5 text-muted">
+                    No results found for "@SearchTerm"
+                </div>
+            }
+        </div>
+    }
+</div>
+
+<style>
+    .tracking-wide { letter-spacing: 0.1em; }
+    .x-small { font-size: 0.75rem; }
+    .op-50 { opacity: 0.5; }
+    .hover-opacity-100:hover { opacity: 1; }
+    .bg-light { background-color: #f8f9fa !important; }
+    .avatar-circle { font-size: 0.85rem; }
+</style>
+
+<style>
+    .ls-1 { letter-spacing: 0.05em; }
+</style>
+
+@code {
+    private List<User> Users = new();
+    private bool IsLoading = true;
+    private int TotalProducts = 0;
+    private int TotalOrders = 0;
+    private decimal TotalRevenue = 0;
+    private string SearchTerm = "";
+
+    private IEnumerable<User> FilteredUsers => string.IsNullOrWhiteSpace(SearchTerm) 
+        ? Users 
+        : Users.Where(u => 
+            u.FirstName.Contains(SearchTerm, StringComparison.OrdinalIgnoreCase) || 
+            u.LastName.Contains(SearchTerm, StringComparison.OrdinalIgnoreCase) ||
+            u.Email.Contains(SearchTerm, StringComparison.OrdinalIgnoreCase));
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+        IsLoading = false;
+    }
+
+    private async Task LoadData()
+    {
+        // Fetch Users
+        Users = await UserRepository.GetAllAsync();
+
+        // Fetch Product Count
+        var products = await ProductService.SearchProductsAsync(new Shopimoto.Domain.DTOs.ProductSearchParams { PageSize = 1000 });
+        TotalProducts = products.TotalCount;
+
+        // Fetch Order Stats
+        var stats = await OrderService.GetPlatformStatsAsync();
+        TotalOrders = stats.TotalOrders;
+        TotalRevenue = stats.TotalRevenue;
+    }
+
+    private async Task ToggleBan(User user)
+    {
+        user.IsBanned = !user.IsBanned;
+        await UserRepository.UpdateAsync(user);
+        // Toast?
+    }
+
+    private string GetRoleBadgeClass(UserRole role)
+    {
+        return role switch
+        {
+            UserRole.Admin => "bg-dark text-white",
+            UserRole.Seller => "bg-primary text-white",
+            _ => "bg-light text-dark"
+        };
+    }
+}

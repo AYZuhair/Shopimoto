@@ -1049,3 +1049,4 @@
 /Users/ahmadzuhair/Documents/Coding/Shopemoto/Shopimoto/Shopimoto.Web/Shopimoto.Web.Client/bin/Debug/net8.0/BCrypt.Net-Next.dll
 /Users/ahmadzuhair/Documents/Coding/Shopemoto/Shopimoto/Shopimoto.Web/Shopimoto.Web.Client/obj/Debug/net8.0/webcil/BCrypt.Net-Next.wasm
 /Users/ahmadzuhair/Documents/Coding/Shopemoto/Shopimoto/Shopimoto.Web/Shopimoto.Web.Client/obj/Debug/net8.0/compressed/769dtyanhq.gz
+/Users/ahmadzuhair/Documents/Coding/Shopemoto/Shopimoto/Shopimoto.Web/Shopimoto.Web.Client/obj/Debug/net8.0/Shopimoto.Web.Client.sourcelink.json
