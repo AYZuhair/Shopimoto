@@ -1,7 +1,7 @@
 {
   "mainAssemblyName": "Shopimoto.Web.Client",
   "resources": {
-    "hash": "sha256-A99v8u9hjrnML5TedIJ4rGUnhBkclDCjLfTpDy5gBQA=",
+    "hash": "sha256-sLLkSOx2wn5IWzU1zRdtFODszMTgOP1hC+1NF/yVd1k=",
     "jsModuleNative": {
       "dotnet.native.8.0.22.gipm1d6lkx.js": "sha256-vtotCeXt2UD6oc459laJT32vBgigZ+eLoUmdeFkvYDk="
     },
@@ -209,14 +209,14 @@
       "mscorlib.wasm": "sha256-K9gNrsN9UmPqLs6J/FrkiKpmkVGnHjjqUsc7YGvesCY=",
       "netstandard.wasm": "sha256-4emjlXLM9qW3t2tlII20SDylBgG4ueI0wy9nh5FMd8g=",
       "System.Private.CoreLib.wasm": "sha256-2DN4v7I/tabltDEPdIO8sDBB0tY8zOm+0CvHbMssXW4=",
-      "Shopimoto.Application.wasm": "sha256-8EzW33KjTvJb9SsTrqZgRz5Xd+ZfNP5vaxyi4gJNHko=",
-      "Shopimoto.Domain.wasm": "sha256-YiMIAZn9lB6yF9uCouNQ/x5negi4tVmuO6LHXphE57c=",
-      "Shopimoto.Web.Client.wasm": "sha256-Ig5APFlz79uQLPONZD1Uhz3/NoysCpH+cjZd5NI3LOs="
+      "Shopimoto.Application.wasm": "sha256-o8Siu4fbyzVEsK69b5xiScLxJqyG134I1xnxWcV0Ntk=",
+      "Shopimoto.Domain.wasm": "sha256-uhDm/x5Qw8biVFyqr7tucHD2jpbY3USgA91G96nM28U=",
+      "Shopimoto.Web.Client.wasm": "sha256-5QcKCH1OwNmUPPhx+xbJ623P7ZiZToKE0zXB4z9tEXo="
     },
     "pdb": {
-      "Shopimoto.Application.pdb": "sha256-C5mPa4Zn2icFqOop/sshBJgaI8puX9fPD2msvlFG0I0=",
-      "Shopimoto.Domain.pdb": "sha256-JAx5Bm9kBBHEQtVPWbqAhihu+EO7/Rdk/T9R4jDujec=",
-      "Shopimoto.Web.Client.pdb": "sha256-7bU9FzAelAHaFZ6nhgpi20XQvGA9pfBS+aL4i0axg1M="
+      "Shopimoto.Application.pdb": "sha256-LMKerdnOo3KxxFHWl3n0dMyOVrSWZPWCKg+R5P0+Tnw=",
+      "Shopimoto.Domain.pdb": "sha256-23Wol2uUMiULxhK4FW9Mso15tXZij4+p8QPcQH85Qn4=",
+      "Shopimoto.Web.Client.pdb": "sha256-9iG1waKhhtJ3JbIocnDRjfYVC9D5gnt/TsShuphsXCw="
     }
   },
   "cacheBootResources": true,

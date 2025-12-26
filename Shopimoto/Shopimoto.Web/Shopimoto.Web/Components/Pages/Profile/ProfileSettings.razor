@@ -11,157 +11,118 @@
 @inject IAuthService AuthService
 @inject NavigationManager NavigationManager
 
-<div class="container py-5" style="margin-top: -5vh;">
+<div class="container-fluid px-4 mt-4 fade-in">
     <div class="row justify-content-center">
-        <div class="col-lg-7">
-            <div class="card shadow-lg animate-fade-in border-0 overflow-hidden">
-                
-                <!-- Header with Gradient & Profile Pic -->
-                <div class="position-relative text-center p-5 pb-5" style="background: linear-gradient(135deg, var(--primary-color), var(--primary-hover)); color: white;">
-                    <div class="mb-2">
-                         <i class="bi bi-person-fill-gear fs-1 opacity-50"></i>
-                    </div>
-                    <h2 class="fw-bold mb-1">Profile Settings</h2>
-                    <p class="opacity-75 mb-4">Manage your personal information</p>
-
-                    <!-- Profile Pic container overlapping the bottom -->
-                    <div class="position-absolute start-50 translate-middle-x" style="bottom: -50px;">
-                        <div class="position-relative">
-                             <img src="@(string.IsNullOrEmpty(UserProfile?.ProfilePictureUrl) ? $"https://ui-avatars.com/api/?name={UserProfile?.FirstName}+{UserProfile?.LastName}&background=random" : UserProfile.ProfilePictureUrl)" 
-                                  alt="Profile" 
-                                  class="rounded-circle border border-4 border-white shadow-sm bg-white"
-                                  style="width: 100px; height: 100px; object-fit: cover;">
-                             <span class="position-absolute bottom-0 end-0 bg-secondary text-white rounded-circle p-1 border border-2 border-white d-flex align-items-center justify-content-center shadow-sm" style="width: 30px; height: 30px;">
-                                 <i class="bi bi-camera-fill small"></i>
-                             </span>
-                        </div>
-                    </div>
+        <div class="col-lg-8 col-xl-7">
+             <div class="d-flex align-items-center mb-4">
+                <a href="/" class="btn btn-outline-light text-dark shadow-sm rounded-circle me-3" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                    <i class="bi bi-arrow-left"></i>
+                </a>
+                <div>
+                     <h4 class="fw-bold mb-0">Profile Settings</h4>
+                     <p class="text-muted small mb-0">Manage your account details and public profile</p>
                 </div>
+            </div>
 
-                <div class="card-body p-5 pt-5 mt-4">
-                    @if (IsLoading)
-                    {
-                        <div class="text-center py-5">
-                            <div class="spinner-border text-primary" role="status">
-                                <span class="visually-hidden">Loading...</span>
-                            </div>
-                            <p class="text-muted mt-3">Loading profile...</p>
-                        </div>
-                    }
-                    else if (UserProfile != null)
-                    {
-                        <div class="text-center mb-5">
-                            <h4 class="fw-bold mb-1">@UserProfile.FirstName @UserProfile.LastName</h4>
-                             <div class="d-inline-flex align-items-center gap-2 bg-light px-3 py-1 rounded-pill mt-2 border">
-                                <span class="text-muted small text-uppercase fw-bold ls-1">Member ID</span>
-                                <span class="fw-bold text-primary font-monospace">@UserProfile.MemberId</span>
-                            </div>
-                        </div>
-
-                        <EditForm Model="@UserProfile" OnValidSubmit="HandleValidSubmit" FormName="ProfileSettingsForm">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-5">
+                <div class="card-body p-5">
+                     @if (IsLoading)
+                     {
+                         <div class="text-center py-5">
+                             <div class="spinner-border text-primary" role="status"></div>
+                         </div>
+                     }
+                     else if (UserProfile != null)
+                     {
+                         <EditForm Model="@UserProfile" OnValidSubmit="HandleValidSubmit" FormName="ProfileSettingsForm">
                             <DataAnnotationsValidator />
-                            <ValidationSummary class="text-danger mb-3 small" />
-
-                            <div class="row g-4">
-                                <!-- Personal Info Section -->
-                                <div class="col-12">
-                                     <h6 class="text-uppercase text-muted fw-bold small mb-3 ls-1 border-bottom pb-2">Personal Information</h6>
+                            
+                            <!-- Profile Header -->
+                            <div class="d-flex align-items-center mb-5 border-bottom pb-4">
+                                <div class="position-relative me-4">
+                                     <img src="@(string.IsNullOrEmpty(UserProfile?.ProfilePictureUrl) ? $"https://ui-avatars.com/api/?name={UserProfile?.FirstName}+{UserProfile?.LastName}&background=random" : UserProfile.ProfilePictureUrl)" 
+                                          alt="Profile" 
+                                          class="rounded-circle shadow-sm"
+                                          style="width: 80px; height: 80px; object-fit: cover;">
+                                      <label for="profilePicUpload" class="position-absolute bottom-0 end-0 bg-white shadow-sm rounded-circle border p-1" style="cursor: pointer; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
+                                          <i class="bi bi-camera-fill text-muted small"></i>
+                                          <InputFile id="profilePicUpload" OnChange="@LoadFiles" class="d-none" accept=".jpg,.jpeg,.png" />
+                                      </label>
                                 </div>
-                                
+                                <div>
+                                    <h5 class="fw-bold mb-1">@UserProfile.FirstName @UserProfile.LastName</h5>
+                                    <p class="text-muted small mb-0">@UserProfile.Email</p>
+                                    <span class="badge bg-light text-dark mt-2 fw-normal border">@UserProfile.Role</span>
+                                </div>
+                            </div>
+                            
+                            <h6 class="fw-bold mb-3 text-dark">Personal Information</h6>
+                            <div class="row g-4 mb-4">
                                 <div class="col-md-6">
-                                    <div class="mb-1">
-                                        <label for="firstName" class="form-label">First Name</label>
-                                        <InputText id="firstName" class="form-control" @bind-Value="UserProfile.FirstName" />
+                                    <label class="form-label text-muted small fw-bold">First Name</label>
+                                    <InputText class="form-control bg-light border-0 py-2 rounded-3" @bind-Value="UserProfile.FirstName" />
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label text-muted small fw-bold">Last Name</label>
+                                    <InputText class="form-control bg-light border-0 py-2 rounded-3" @bind-Value="UserProfile.LastName" />
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label text-muted small fw-bold">Username</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light border-0 text-muted rounded-start-3 ms-1">@@</span>
+                                        <InputText class="form-control bg-light border-0 py-2 rounded-end-3" @bind-Value="UserProfile.Username" placeholder="username" />
                                     </div>
                                 </div>
                                 <div class="col-md-6">
-                                    <div class="mb-1">
-                                        <label for="lastName" class="form-label">Last Name</label>
-                                        <InputText id="lastName" class="form-control" @bind-Value="UserProfile.LastName" />
-                                    </div>
-                                </div>
-                                
-                                <div class="col-md-8">
-                                    <div class="mb-1">
-                                        <label for="username" class="form-label">Username</label>
-                                        <div class="input-group">
-                                            <span class="input-group-text bg-light border-end-0 text-muted">@@</span>
-                                            <InputText id="username" class="form-control border-start-0 ps-0" @bind-Value="UserProfile.Username" placeholder="username" />
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="mb-1">
-                                        <label for="age" class="form-label">Age</label>
-                                        <InputNumber id="age" class="form-control" @bind-Value="UserProfile.Age" />
-                                    </div>
+                                    <label class="form-label text-muted small fw-bold">Age</label>
+                                    <InputNumber class="form-control bg-light border-0 py-2 rounded-3" @bind-Value="UserProfile.Age" />
                                 </div>
                                 <div class="col-12">
-                                    <div class="mb-1">
-                                        <label for="bio" class="form-label">Bio / Store Description</label>
-                                        <InputTextArea id="bio" class="form-control" rows="3" @bind-Value="UserProfile.Bio" placeholder="Tell us about your store..." />
-                                        <div class="form-text">This will be displayed on your store profile.</div>
-                                    </div>
-                                </div>
-
-                                <!-- Avatar Section -->
-                                <div class="col-12 mt-4">
-                                     <h6 class="text-uppercase text-muted fw-bold small mb-3 ls-1 border-bottom pb-2">Avatar</h6>
-                                </div>
-                                
-                                <div class="col-12">
-                                    <div class="mb-3">
-                                        <label for="profilePic" class="form-label">Profile Picture URL</label>
-                                        <!-- Keep URL input for fallback/manual but add File Upload as primary -->
-                                        <div class="d-flex gap-2 align-items-center">
-                                            <InputFile OnChange="@LoadFiles" class="form-control" accept=".jpg,.jpeg,.png" />
-                                        </div>
-                                        <div class="form-text mt-2"><i class="bi bi-info-circle me-1"></i> Upload a JPG or PNG (max 5MB).</div>
-                                    </div>
-                                    @if (!string.IsNullOrEmpty(ErrorMessage))
-                                    {
-                                        <div class="alert alert-danger border-0 bg-danger bg-opacity-10 text-danger mt-3">
-                                            <i class="bi bi-exclamation-circle-fill me-2"></i> @ErrorMessage
-                                        </div>
-                                    }
+                                    <label class="form-label text-muted small fw-bold">Bio</label>
+                                    <InputTextArea class="form-control bg-light border-0 py-2 rounded-3" rows="3" @bind-Value="UserProfile.Bio" placeholder="Tell us a bit about yourself..." />
                                 </div>
                             </div>
 
-                            <div class="d-grid gap-2 mt-5">
-                                <button type="submit" class="btn btn-primary shadow-sm py-3">
-                                    Save Changes
-                                </button>
-                                <a href="/" class="btn btn-link text-muted text-decoration-none">Return Home</a>
-                            </div>
-
-                            @if (!string.IsNullOrEmpty(StatusMessage))
+                             @if (!string.IsNullOrEmpty(ErrorMessage))
                             {
-                                <div class="alert alert-success mt-4 text-center border-0 bg-success bg-opacity-10 text-success fw-medium animate-fade-in" role="alert">
+                                <div class="alert alert-danger border-0 bg-danger bg-opacity-10 text-danger mb-4 rounded-3 d-flex align-items-center">
+                                    <i class="bi bi-exclamation-circle-fill me-2"></i> @ErrorMessage
+                                </div>
+                            }
+
+                             @if (!string.IsNullOrEmpty(StatusMessage))
+                            {
+                                <div class="alert alert-success border-0 bg-success bg-opacity-10 text-success mb-4 rounded-3 d-flex align-items-center animate-fade-in">
                                     <i class="bi bi-check-circle-fill me-2"></i> @StatusMessage
                                 </div>
                             }
-                        </EditForm>
-                    }
-                    else
+
+                            <div class="d-flex justify-content-end pt-3">
+                                <button type="submit" class="btn btn-dark rounded-pill px-5 shadow-sm py-2 fw-medium">
+                                    Save Changes
+                                </button>
+                            </div>
+                         </EditForm>
+                     }
+                      else
                     {
-                        <div class="alert alert-danger border-0 bg-danger bg-opacity-10 text-danger rounded-3 text-center p-4">
-                            <i class="bi bi-exclamation-octagon fs-1 d-block mb-3"></i>
+                        <div class="text-center py-5">
+                            <i class="bi bi-person-x fs-1 text-muted mb-3 opacity-50"></i>
                             <h5 class="fw-bold">Profile Not Found</h5>
-                            <p class="mb-0">We couldn't retrieve your user details.</p>
+                            <p class="text-muted">We couldn't retrieve your user details.</p>
                         </div>
                     }
                 </div>
-            </div>
-            
-            <div class="text-center mt-4">
-                 <p class="text-muted small opacity-75">Member since @UserProfile?.CreatedAt.Year</p>
             </div>
         </div>
     </div>
 </div>
 
 <style>
-    .ls-1 { letter-spacing: 0.05em; }
+    .form-control:focus {
+        background-color: #fff !important;
+        box-shadow: 0 0 0 4px rgba(0,0,0,0.05);
+    }
 </style>
 
 @using System.IO

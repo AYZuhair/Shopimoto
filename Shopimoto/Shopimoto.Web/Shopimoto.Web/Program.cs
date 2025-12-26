@@ -29,6 +29,8 @@ builder.Services.AddScoped<Shopimoto.Domain.Interfaces.ICartRepository, Shopimot
 builder.Services.AddScoped<Shopimoto.Application.Interfaces.ICartService, Shopimoto.Application.Services.CartService>();
 builder.Services.AddScoped<Shopimoto.Domain.Interfaces.IOrderRepository, Shopimoto.Infrastructure.Repositories.OrderRepository>();
 builder.Services.AddScoped<Shopimoto.Application.Interfaces.IOrderService, Shopimoto.Application.Services.OrderService>();
+builder.Services.AddScoped<Shopimoto.Domain.Interfaces.ICategoryRepository, Shopimoto.Infrastructure.Repositories.CategoryRepository>();
+builder.Services.AddScoped<Shopimoto.Application.Interfaces.ICategoryService, Shopimoto.Application.Services.CategoryService>();
 builder.Services.AddScoped<Shopimoto.Domain.Interfaces.IAddressRepository, Shopimoto.Infrastructure.Repositories.AddressRepository>();
 builder.Services.AddScoped<Shopimoto.Application.Interfaces.IAddressService, Shopimoto.Application.Services.AddressService>();
 builder.Services.AddScoped<Shopimoto.Domain.Interfaces.IReviewRepository, Shopimoto.Infrastructure.Repositories.ReviewRepository>();
